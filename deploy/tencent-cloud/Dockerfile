@@ -11,13 +11,16 @@ RUN npm run build
 FROM node:22-bookworm-slim AS runtime
 
 ENV NODE_ENV=production \
-    WRANGLER_LOG_PATH=/tmp/wrangler.log
+    WRANGLER_LOG_PATH=/tmp/wrangler.log \
+    ZHANGDAN_DB_PATH=/data/zhangdan.sqlite
 
 WORKDIR /app
 
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/package.json ./package.json
+
+RUN install -d -o node -g node -m 0700 /data
 
 USER node
 

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { createHash, createHmac } from "node:crypto";
 import { createServer } from "node:http";
-import test from "node:test";
+import test, { before } from "node:test";
+
+process.env.ZHANGDAN_DB_PATH = ":memory:";
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
@@ -18,9 +20,23 @@ const ctx = {
   passThroughOnException() {},
 };
 
+let authCookie = null;
+
 async function request(path, init = {}) {
+  const { authenticated = true, ...requestInit } = init;
+  const headers = new Headers(requestInit.headers);
+  if (authenticated && authCookie && !headers.has("cookie")) {
+    headers.set("cookie", authCookie);
+  }
   const worker = await workerPromise;
-  return worker.fetch(new Request(new URL(path, "http://localhost"), init), env, ctx);
+  return worker.fetch(
+    new Request(new URL(path, "http://localhost"), {
+      ...requestInit,
+      headers,
+    }),
+    env,
+    ctx,
+  );
 }
 
 async function readJson(response) {
@@ -63,7 +79,40 @@ async function startMockUpstream(handler) {
   };
 }
 
-test("首页可直接查看余额，刷新时不自动打开添加上游表单", async () => {
+before(async () => {
+  const protectedResponse = await request("/api/upstreams", {
+    authenticated: false,
+  });
+  assert.equal(protectedResponse.status, 401);
+
+  const homeResponse = await request("/", { authenticated: false });
+  assert.match(String(homeResponse.status), /^30[2378]$/);
+  assert.equal(new URL(homeResponse.headers.get("location"), "http://localhost").pathname, "/setup");
+
+  const setupResponse = await request("/api/auth/setup", {
+    authenticated: false,
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "http://localhost",
+      "x-forwarded-proto": "https",
+    },
+    body: JSON.stringify({
+      username: "test-admin",
+      password: "test-password-42!secure",
+    }),
+  });
+  assert.equal(setupResponse.status, 201);
+  const setCookie = setupResponse.headers.get("set-cookie");
+  assert.ok(setCookie);
+  assert.match(setCookie, /HttpOnly/i);
+  assert.match(setCookie, /SameSite=Lax/i);
+  assert.match(setCookie, /Max-Age=604800/i);
+  assert.match(setCookie, /Secure/i);
+  authCookie = setCookie.split(";", 1)[0];
+});
+
+test("管理员登录后可查看首页，刷新时不自动打开添加上游表单", async () => {
   const response = await request("/", {
     headers: { accept: "text/html" },
   });
@@ -88,6 +137,145 @@ test("健康检查只返回服务状态且禁止缓存", async () => {
   assert.deepEqual(payload, { status: "ok" });
   assert.equal(containsProperty(payload, "accounts"), false);
   assert.equal(containsProperty(payload, "credentials"), false);
+});
+
+test("未登录时全部上游管理接口均返回 401", async () => {
+  const cases = [
+    ["/api/upstreams", { method: "GET" }],
+    [
+      "/api/upstreams",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({}),
+      },
+    ],
+    [
+      "/api/upstreams/demo-cloudsky",
+      {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: "不应更新" }),
+      },
+    ],
+    ["/api/upstreams/demo-cloudsky", { method: "DELETE" }],
+    [
+      "/api/upstreams/refresh",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({}),
+      },
+    ],
+  ];
+
+  for (const [path, init] of cases) {
+    const response = await request(path, { ...init, authenticated: false });
+    assert.equal(response.status, 401, `${init.method} ${path}`);
+    const payload = await readJson(response);
+    assert.deepEqual(payload, { error: "请先登录" });
+    assert.equal(response.headers.get("cache-control"), "no-store");
+  }
+});
+
+test("初始化关闭后不能创建第二个管理员", async () => {
+  const response = await request("/api/auth/setup", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "http://localhost",
+    },
+    body: JSON.stringify({
+      username: "second-admin",
+      password: "another-password-42!",
+    }),
+  });
+  assert.equal(response.status, 409);
+  const payload = await readJson(response);
+  assert.match(payload.error, /已经创建/);
+});
+
+test("登录错误不枚举用户名并按 IP 与用户名限速", async () => {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const response = await request("/api/auth/login", {
+      authenticated: false,
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: "http://localhost",
+        "x-forwarded-for": "203.0.113.21",
+      },
+      body: JSON.stringify({
+        username: "missing-admin",
+        password: "wrong-password-42!",
+      }),
+    });
+    assert.equal(response.status, 401);
+    assert.equal((await readJson(response)).error, "用户名或密码不正确");
+  }
+
+  const limitedResponse = await request("/api/auth/login", {
+    authenticated: false,
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "http://localhost",
+      "x-forwarded-for": "203.0.113.21",
+    },
+    body: JSON.stringify({
+      username: "missing-admin",
+      password: "wrong-password-42!",
+    }),
+  });
+  assert.equal(limitedResponse.status, 429);
+  assert.ok(Number(limitedResponse.headers.get("retry-after")) > 0);
+});
+
+test("独立登录会话可退出且不会影响其他会话", async () => {
+  const loginResponse = await request("/api/auth/login", {
+    authenticated: false,
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: "http://localhost",
+      "x-forwarded-for": "203.0.113.22",
+    },
+    body: JSON.stringify({
+      username: "TEST-ADMIN",
+      password: "test-password-42!secure",
+    }),
+  });
+  assert.equal(loginResponse.status, 200);
+  const loginCookie = loginResponse.headers.get("set-cookie");
+  assert.ok(loginCookie);
+  const secondSessionCookie = loginCookie.split(";", 1)[0];
+
+  const authenticatedResponse = await request("/api/upstreams", {
+    authenticated: false,
+    headers: { cookie: secondSessionCookie },
+  });
+  assert.equal(authenticatedResponse.status, 200);
+
+  const logoutResponse = await request("/api/auth/logout", {
+    authenticated: false,
+    method: "POST",
+    headers: {
+      cookie: secondSessionCookie,
+      origin: "http://localhost",
+    },
+  });
+  assert.equal(logoutResponse.status, 200);
+  assert.match(logoutResponse.headers.get("set-cookie") ?? "", /Max-Age=0/i);
+
+  const expiredResponse = await request("/api/upstreams", {
+    authenticated: false,
+    headers: { cookie: secondSessionCookie },
+  });
+  assert.equal(expiredResponse.status, 401);
+  assert.equal((await readJson(expiredResponse)).error, "请先登录");
+
+  const primarySessionResponse = await request("/api/upstreams");
+  assert.equal(primarySessionResponse.status, 200);
 });
 
 test("演示账号只通过脱敏字段返回", async () => {

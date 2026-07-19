@@ -2,6 +2,7 @@
 set -euo pipefail
 
 APP_ROOT="/opt/zhangdan"
+STATE_ROOT="/var/lib/zhangdan"
 CONTAINER_NAME="zhangdan"
 HOST_PORT="${ZHANGDAN_HOST_PORT:-3210}"
 ARCHIVE_PATH="${1:-}"
@@ -55,6 +56,7 @@ PROBE_NAME="zhangdan-probe-${RELEASE_ID}"
 PREVIOUS_NAME=""
 
 install -d -m 0755 "${APP_ROOT}" "${APP_ROOT}/releases" "${RELEASE_PATH}"
+install -d -o 1000 -g 1000 -m 0700 "${STATE_ROOT}"
 tar -xzf "${ARCHIVE_PATH}" -C "${RELEASE_PATH}" --strip-components=1
 
 docker build --file "${RELEASE_PATH}/deploy/tencent-cloud/Dockerfile" --tag "${IMAGE_TAG}" "${RELEASE_PATH}"
@@ -68,11 +70,15 @@ container_options=(
   --tmpfs /tmp:rw,noexec,nosuid,size=64m
 )
 
-docker run --detach --name "${PROBE_NAME}" "${container_options[@]}" "${IMAGE_TAG}" >/dev/null
+docker run --detach \
+  --name "${PROBE_NAME}" \
+  --tmpfs /data:rw,noexec,nosuid,size=16m,uid=1000,gid=1000,mode=0700 \
+  "${container_options[@]}" \
+  "${IMAGE_TAG}" >/dev/null
 
 probe_healthy=false
 for _ in $(seq 1 30); do
-  if docker exec "${PROBE_NAME}" node -e 'fetch("http://127.0.0.1:3000/healthz").then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))'; then
+  if docker exec "${PROBE_NAME}" node -e 'Promise.all([fetch("http://127.0.0.1:3000/healthz"), fetch("http://127.0.0.1:3000/api/auth/status")]).then(async ([health, auth]) => { const status = await auth.json(); process.exit(health.ok && auth.ok && typeof status.setupRequired === "boolean" ? 0 : 1); }).catch(() => process.exit(1))'; then
     probe_healthy=true
     break
   fi
@@ -105,6 +111,7 @@ rollback() {
 if ! docker run --detach \
   --name "${CONTAINER_NAME}" \
   --publish "127.0.0.1:${HOST_PORT}:3000" \
+  --mount "type=bind,source=${STATE_ROOT},target=/data" \
   --restart unless-stopped \
   "${container_options[@]}" \
   "${IMAGE_TAG}" >/dev/null; then
@@ -114,7 +121,8 @@ fi
 
 host_healthy=false
 for _ in $(seq 1 30); do
-  if curl -fsS --max-time 5 "http://127.0.0.1:${HOST_PORT}/healthz" >/dev/null; then
+  if curl -fsS --max-time 5 "http://127.0.0.1:${HOST_PORT}/healthz" >/dev/null && \
+    curl -fsS --max-time 5 "http://127.0.0.1:${HOST_PORT}/api/auth/status" >/dev/null; then
     host_healthy=true
     break
   fi

@@ -1299,6 +1299,7 @@ export async function updateUpstream(id: string, input: UpstreamInput) {
     }
   } else if (
     record.provider === "web_bearer" &&
+    record.credentials.provider === "web_bearer" &&
     draft.credentials.provider === "web_bearer"
   ) {
     const nextBaseUrl =

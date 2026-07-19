@@ -28,6 +28,7 @@ release_items=(
   AGENTS.md
   README.md
   ROADMAP.md
+  cloudflare-env.d.ts
   drizzle.config.ts
   eslint.config.mjs
   next.config.ts

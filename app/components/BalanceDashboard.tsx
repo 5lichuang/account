@@ -216,6 +216,9 @@ async function readResponse(response: Response): Promise<UpstreamResponse> {
     | { error?: string }
     | null;
   if (!response.ok) {
+    if (response.status === 401) {
+      window.location.replace("/login");
+    }
     const message = payload && "error" in payload ? payload.error : undefined;
     throw new Error(message || `请求失败（${response.status}）`);
   }
@@ -254,7 +257,7 @@ function remainingProgress(account: PublicUpstream): {
   };
 }
 
-export function BalanceDashboard() {
+export function BalanceDashboard({ username }: { username: string }) {
   const [accounts, setAccounts] = useState<PublicUpstream[]>([]);
   const [selectedId, setSelectedId] = useState("all");
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
@@ -294,6 +297,17 @@ export function BalanceDashboard() {
   const lastDeltaRef = useRef({ dx: 0, dy: 0 });
   const closingRef = useRef(false);
   const glowRef = useRef<HTMLDivElement>(null);
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+      });
+    } finally {
+      window.location.replace("/login");
+    }
+  }, []);
 
   const applyPayload = useCallback((payload: UpstreamResponse) => {
     setAccounts(payload.accounts);
@@ -947,6 +961,10 @@ export function BalanceDashboard() {
           </span>
         </div>
         <div className="bd-header__actions">
+          <div className="bd-session" aria-label={`当前管理员：${username}`}>
+            <span>{username}</span>
+            <button type="button" onClick={() => void logout()}>退出</button>
+          </div>
           <div className="bd-appearance" aria-label="外观设置">
             <div className="bd-seg" role="group" aria-label="颜色模式">
               <button

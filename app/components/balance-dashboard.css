@@ -445,6 +445,35 @@
   justify-content: flex-end;
 }
 
+.bd-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 3px 4px 3px 11px;
+  border: 1px solid var(--bd-line);
+  border-radius: 999px;
+  color: var(--bd-muted);
+  background: color-mix(in srgb, var(--bd-ink) 4%, transparent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bd-session button {
+  min-height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--bd-ink);
+  background: color-mix(in srgb, var(--bd-ink) 8%, transparent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.bd-session button:hover {
+  color: var(--bd-teal);
+}
+
 .bd-appearance {
   display: flex;
   align-items: center;
@@ -2422,6 +2451,14 @@
 
   .bd-brand small {
     display: none;
+  }
+
+  .bd-session span {
+    display: none;
+  }
+
+  .bd-session {
+    padding-left: 4px;
   }
 
   .bd-header__actions .bd-button {
