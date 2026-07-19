@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>zhangdan × aboutme · 品牌应用 Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../aboutme/tokens/brand.css" />
+  <style>
+    /* ——— map zhangdan tokens → aboutme brand ——— */
+    .bd-shell {
+      --bd-bg: var(--sz-bg);
+      --bd-surface: var(--sz-bg-elevated);
+      --bd-card: rgba(10, 12, 28, 0.88);
+      --bd-ink: var(--sz-text);
+      --bd-muted: var(--sz-text-secondary);
+      --bd-subtle: var(--sz-text-muted);
+      --bd-line: rgba(56, 249, 215, 0.1);
+      --bd-line-strong: rgba(56, 249, 215, 0.2);
+      --bd-teal: var(--sz-accent);
+      --bd-teal-dark: #2dd4bf;
+      --bd-teal-soft: rgba(56, 249, 215, 0.1);
+      --bd-coral: #f87171;
+      --bd-coral-dark: #fca5a5;
+      --bd-coral-soft: rgba(248, 113, 113, 0.12);
+      --bd-amber: #fbbf24;
+      --bd-amber-soft: rgba(251, 191, 36, 0.12);
+
+      min-height: 100vh;
+      color: var(--bd-ink);
+      font-family: var(--sz-font-body);
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--sz-bg);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bd-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: var(--sz-gradient-nebula);
+    }
+
+    .bd-shell::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.7;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.45), transparent),
+        radial-gradient(1px 1px at 38% 72%, rgba(255,255,255,.3), transparent),
+        radial-gradient(1.2px 1.2px at 70% 28%, rgba(56,249,215,.4), transparent),
+        radial-gradient(1px 1px at 88% 60%, rgba(96,165,250,.4), transparent),
+        radial-gradient(1px 1px at 55% 90%, rgba(255,255,255,.28), transparent);
+    }
+
+    .bd-shell > * { position: relative; z-index: 1; }
+    .bd-shell, .bd-shell * { box-sizing: border-box; }
+    body { margin: 0; background: #050510; }
+
+    /* demo banner */
+    .demo-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px clamp(16px, 3vw, 40px);
+      border-bottom: 1px solid rgba(56, 249, 215, 0.15);
+      background: rgba(56, 249, 215, 0.06);
+      font-size: 12px;
+      color: var(--sz-text-secondary);
+    }
+    .demo-banner strong {
+      color: var(--sz-accent);
+      font-family: var(--sz-font-display);
+      letter-spacing: 0.04em;
+    }
+    .demo-banner a {
+      color: var(--sz-accent);
+      text-decoration: none;
+      border: 1px solid rgba(56, 249, 215, 0.25);
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(56, 249, 215, 0.06);
+    }
+    .demo-banner a:hover { box-shadow: var(--sz-glow-sm); }
+
+    /* header */
+    .bd-header {
+      position: sticky;
+      z-index: 30;
+      top: 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      min-height: 72px;
+      padding: 12px clamp(20px, 4vw, 64px);
+      border-bottom: 1px solid rgba(56, 249, 215, 0.1);
+      background: rgba(5, 5, 16, 0.78);
+      backdrop-filter: blur(18px);
+    }
+    .bd-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      justify-self: start;
+    }
+    .bd-brand__mark {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: #050510;
+      color: var(--sz-accent);
+      font-family: var(--sz-font-display);
+      font-weight: 700;
+      font-size: 18px;
+      border: 1px solid rgba(56, 249, 215, 0.28);
+      box-shadow: var(--sz-glow-sm);
+    }
+    .bd-brand strong {
+      display: block;
+      font-family: var(--sz-font-display);
+      font-size: 15px;
+      background: var(--sz-gradient-logo);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bd-brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--bd-muted);
+      font-size: 11px;
+    }
+    .bd-header__status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--bd-muted);
+      font-size: 12px;
+    }
+    .bd-header__divider {
+      width: 1px;
+      height: 13px;
+      margin: 0 4px;
+      background: var(--bd-line-strong);
+    }
+    .bd-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--bd-teal);
+      box-shadow: 0 0 0 3px rgba(56, 249, 215, 0.18);
+      display: inline-block;
+    }
+    .bd-status-dot--warning { background: var(--bd-amber); box-shadow: 0 0 0 3px rgba(251,191,36,.18); }
+    .bd-status-dot--error { background: var(--bd-coral); box-shadow: 0 0 0 3px rgba(248,113,113,.18); }
+    .bd-header > .bd-button { justify-self: end; }
+
+    .bd-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 9px 15px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-weight: 650;
+      font-family: var(--sz-font-cn);
+      cursor: pointer;
+      transition: .15s ease;
+    }
+    .bd-button--primary {
+      background: linear-gradient(135deg, #38f9d7, #60a5fa);
+      color: #04120f;
+      box-shadow: 0 0 20px rgba(56, 249, 215, 0.22);
+      border: 0;
+    }
+    .bd-button--primary:hover { box-shadow: 0 0 28px rgba(56, 249, 215, 0.38); transform: translateY(-1px); }
+    .bd-button--secondary, .bd-button--ghost {
+      border-color: var(--bd-line-strong);
+      background: rgba(56, 249, 215, 0.04);
+      color: var(--bd-ink);
+    }
+    .bd-button--secondary:hover, .bd-button--ghost:hover {
+      border-color: rgba(56, 249, 215, 0.4);
+      background: rgba(56, 249, 215, 0.08);
+      box-shadow: var(--sz-glow-sm);
+    }
+
+    .bd-content {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 40px clamp(20px, 4vw, 64px) 64px;
+    }
+
+    .bd-intro {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      margin-bottom: 28px;
+    }
+    .bd-kicker {
+      margin: 0 0 8px;
+      color: var(--sz-accent);
+      font-family: var(--sz-font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .bd-intro h1 {
+      margin: 0;
+      font-family: var(--sz-font-cn);
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--bd-ink);
+    }
+    .bd-intro > div:first-child > p:last-child {
+      max-width: 560px;
+      margin: 12px 0 0;
+      color: var(--bd-muted);
+      font-size: 14px;
+    }
+    .bd-intro__actions { display: flex; gap: 10px; align-items: flex-end; }
+
+    .bd-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--bd-line);
+      border-radius: 16px;
+      background: var(--bd-card);
+      box-shadow: 0 0 40px rgba(56, 249, 215, 0.06);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+    .bd-metric {
+      position: relative;
+      min-height: 148px;
+      padding: 22px;
+    }
+    .bd-metric:not(:last-child) { border-right: 1px solid var(--bd-line); }
+    .bd-metric::after {
+      content: "";
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 24px;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--bd-line-strong);
+    }
+    .bd-metric--good::after { background: var(--bd-teal); box-shadow: 0 0 8px rgba(56,249,215,.5); }
+    .bd-metric--alert::after { background: var(--bd-coral); }
+    .bd-metric__eyebrow {
+      margin: 0 0 18px;
+      color: var(--bd-muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .bd-metric__value {
+      margin: 0;
+      font-family: var(--sz-font-display);
+      font-size: clamp(22px, 2.2vw, 30px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--bd-ink);
+    }
+    .bd-metric--good .bd-metric__value {
+      background: var(--sz-gradient-logo);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bd-metric__note {
+      margin: 10px 0 0;
+      color: var(--bd-subtle);
+      font-size: 11px;
+    }
+
+    .bd-workspace {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .bd-metrics { grid-template-columns: 1fr 1fr; }
+      .bd-metric:nth-child(2) { border-right: 0; }
+      .bd-metric:nth-child(1),
+      .bd-metric:nth-child(2) { border-bottom: 1px solid var(--bd-line); }
+      .bd-workspace { grid-template-columns: 1fr; }
+      .bd-header { grid-template-columns: 1fr auto; }
+      .bd-header__status { display: none; }
+      .bd-intro { flex-direction: column; align-items: flex-start; }
+    }
+
+    .bd-accounts, .bd-detail {
+      border: 1px solid var(--bd-line);
+      border-radius: 16px;
+      background: var(--bd-card);
+      box-shadow: 0 0 32px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+    }
+    .bd-accounts { padding: 18px 10px 10px; position: sticky; top: 88px; }
+    .bd-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 14px;
+    }
+    .bd-section-head h2, .bd-section-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--sz-font-cn);
+    }
+    .bd-section-head > span {
+      min-width: 28px;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 20px;
+      background: rgba(56, 249, 215, 0.1);
+      color: var(--sz-accent);
+      font-size: 11px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+
+    .bd-account-list { display: grid; gap: 4px; }
+    .bd-account {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--bd-ink);
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+    .bd-account:hover { background: rgba(56, 249, 215, 0.05); }
+    .bd-account.is-active {
+      background: rgba(56, 249, 215, 0.08);
+      border-color: rgba(56, 249, 215, 0.18);
+      box-shadow: inset 3px 0 0 var(--sz-accent);
+    }
+    .bd-account__avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(56, 249, 215, 0.12);
+      color: var(--sz-accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .bd-account__avatar--all {
+      background: linear-gradient(135deg, rgba(56,249,215,.25), rgba(96,165,250,.25));
+      color: #fff;
+    }
+    .bd-account__identity strong,
+    .bd-account__balance strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 680;
+    }
+    .bd-account__identity small,
+    .bd-account__balance small {
+      display: block;
+      margin-top: 3px;
+      color: var(--bd-subtle);
+      font-size: 10px;
+    }
+    .bd-account__balance { text-align: right; }
+
+    .bd-detail__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 88px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--bd-line);
+    }
+    .bd-detail__title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .bd-detail__title .bd-account__avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #050510;
+      border: 1px solid rgba(56,249,215,.3);
+      color: var(--sz-accent);
+      font-family: var(--sz-font-display);
+      font-size: 16px;
+    }
+    .bd-detail__title h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: var(--sz-font-cn);
+    }
+    .bd-detail__title p {
+      margin: 4px 0 0;
+      color: var(--bd-subtle);
+      font-size: 11px;
+    }
+    .bd-detail__actions { display: flex; gap: 8px; }
+    .bd-icon-button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--bd-line-strong);
+      border-radius: 9px;
+      background: rgba(56,249,215,.04);
+      color: var(--bd-muted);
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .bd-icon-button:hover {
+      border-color: rgba(56,249,215,.4);
+      color: var(--sz-accent);
+      box-shadow: var(--sz-glow-sm);
+    }
+
+    .bd-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: var(--bd-teal-soft);
+      color: var(--bd-teal-dark);
+      font-size: 10px;
+      font-weight: 750;
+    }
+    .bd-status-chip .bd-status-dot { width: 5px; height: 5px; box-shadow: none; }
+    .bd-status-chip--warning { background: var(--bd-amber-soft); color: #fcd34d; }
+    .bd-status-chip--error { background: var(--bd-coral-soft); color: var(--bd-coral-dark); }
+
+    .bd-balance-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 22px;
+    }
+    @media (max-width: 700px) {
+      .bd-balance-grid { grid-template-columns: 1fr; }
+    }
+    .bd-balance-card {
+      padding: 16px;
+      border: 1px solid var(--bd-line);
+      border-radius: 12px;
+      background: rgba(56, 249, 215, 0.03);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .bd-balance-card:hover {
+      border-color: rgba(56, 249, 215, 0.28);
+      box-shadow: var(--sz-glow-sm);
+    }
+    .bd-balance-card--warning {
+      border-color: rgba(251, 191, 36, 0.35);
+      background: rgba(251, 191, 36, 0.06);
+    }
+    .bd-balance-card > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bd-balance-card p {
+      margin: 0;
+      color: var(--bd-muted);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .bd-balance-card > div > span {
+      color: var(--bd-subtle);
+      font-family: var(--sz-font-display);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+    .bd-balance-card > strong {
+      display: block;
+      margin-top: 12px;
+      font-family: var(--sz-font-display);
+      font-size: clamp(20px, 2vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .bd-balance-card > small {
+      display: block;
+      margin-top: 6px;
+      color: var(--bd-subtle);
+      font-size: 10px;
+    }
+
+    .bd-subscriptions { padding: 4px 22px 22px; }
+    .bd-section-head--wide {
+      padding: 0 0 12px;
+      border-bottom: 1px solid var(--bd-line);
+    }
+    .bd-subscription-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding-top: 14px;
+    }
+    @media (max-width: 700px) {
+      .bd-subscription-list { grid-template-columns: 1fr; }
+    }
+    .bd-subscription {
+      padding: 16px;
+      border: 1px solid var(--bd-line);
+      border-radius: 12px;
+      background: rgba(0,0,0,.15);
+    }
+    .bd-subscription__head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bd-subscription__head h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .bd-subscription__head > strong {
+      font-size: 12px;
+      color: var(--sz-accent);
+      white-space: nowrap;
+    }
+    .bd-progress {
+      height: 6px;
+      margin-top: 16px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .bd-progress > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38f9d7, #60a5fa);
+      box-shadow: 0 0 10px rgba(56,249,215,.4);
+    }
+    .bd-subscription__legend {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--bd-subtle);
+      font-size: 10px;
+    }
+    .bd-subscription__legend strong { color: var(--bd-muted); }
+
+    .bd-detail__footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 22px;
+      border-top: 1px solid var(--bd-line);
+      background: rgba(0,0,0,.2);
+      color: var(--bd-subtle);
+      font-family: var(--sz-font-display);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,249,215,.2);
+      background: rgba(56,249,215,.04);
+      color: var(--bd-muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    footer.demo-foot {
+      text-align: center;
+      padding: 28px 16px 40px;
+      color: var(--bd-subtle);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    footer.demo-foot a { color: var(--sz-accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="bd-shell">
+    <div class="demo-banner">
+      <div>
+        <strong>BRAND APPLY DEMO</strong>
+        · zhangdan 看板 UI × aboutme 设计规范（仅预览，未改生产样式）
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="../../aboutme/demo.html">aboutme 品牌 Demo</a>
+        <a href="../../aboutme/brand-system.html">完整规范</a>
+      </div>
+    </div>
+
+    <header class="bd-header">
+      <div class="bd-brand">
+        <div class="bd-brand__mark">S</div>
+        <div>
+          <strong>Balance Desk</strong>
+          <small>上游余额台 · stormzhang</small>
+        </div>
+      </div>
+      <div class="bd-header__status">
+        <span class="bd-status-dot"></span>
+        <span>3 个上游在线</span>
+        <span class="bd-header__divider"></span>
+        <span>刚刚同步</span>
+      </div>
+      <button class="bd-button bd-button--primary" type="button">＋ 添加上游</button>
+    </header>
+
+    <main class="bd-content">
+      <div class="bd-intro">
+        <div>
+          <p class="bd-kicker">Portfolio Overview</p>
+          <h1>上游余额总览</h1>
+          <p>集中查看多个上游账号的实时余额、累计消耗、订阅额度与同步状态。视觉已套用 aboutme 深空 / 薄荷青规范。</p>
+          <div class="tag-row">
+            <span class="pill">技术&amp;产品人</span>
+            <span class="pill">AI Builder</span>
+            <span class="pill">Reborn in AI</span>
+          </div>
+        </div>
+        <div class="bd-intro__actions">
+          <button class="bd-button bd-button--secondary" type="button">刷新全部</button>
+          <button class="bd-button bd-button--ghost" type="button">导出</button>
+        </div>
+      </div>
+
+      <div class="bd-metrics">
+        <article class="bd-metric bd-metric--good">
+          <p class="bd-metric__eyebrow">可用总余额</p>
+          <p class="bd-metric__value">¥ 12,486.32</p>
+          <p class="bd-metric__note">跨 3 个活跃上游汇总</p>
+        </article>
+        <article class="bd-metric">
+          <p class="bd-metric__eyebrow">本月累计消耗</p>
+          <p class="bd-metric__value">¥ 3,204.18</p>
+          <p class="bd-metric__note">含 Token / 云资源估算</p>
+        </article>
+        <article class="bd-metric bd-metric--alert">
+          <p class="bd-metric__eyebrow">预警账号</p>
+          <p class="bd-metric__value">1</p>
+          <p class="bd-metric__note">低于阈值需关注</p>
+        </article>
+        <article class="bd-metric">
+          <p class="bd-metric__eyebrow">同步健康度</p>
+          <p class="bd-metric__value">98%</p>
+          <p class="bd-metric__note">最近 24h 请求成功</p>
+        </article>
+      </div>
+
+      <div class="bd-workspace">
+        <aside class="bd-accounts">
+          <div class="bd-section-head">
+            <h2>上游列表</h2>
+            <span>3</span>
+          </div>
+          <div class="bd-account-list">
+            <button class="bd-account is-active" type="button">
+              <span class="bd-account__avatar bd-account__avatar--all">∑</span>
+              <span class="bd-account__identity">
+                <strong>全部上游</strong>
+                <small><span class="bd-status-dot"></span>组合视图</small>
+              </span>
+              <span class="bd-account__balance">
+                <strong>¥12,486</strong>
+                <small>CNY</small>
+              </span>
+            </button>
+            <button class="bd-account" type="button">
+              <span class="bd-account__avatar">云</span>
+              <span class="bd-account__identity">
+                <strong>云天畅想</strong>
+                <small><span class="bd-status-dot"></span>兼容 API · 正常</small>
+              </span>
+              <span class="bd-account__balance">
+                <strong>¥428.36</strong>
+                <small>CNY</small>
+              </span>
+            </button>
+            <button class="bd-account" type="button">
+              <span class="bd-account__avatar">阿</span>
+              <span class="bd-account__identity">
+                <strong>阿里云 BSS</strong>
+                <small><span class="bd-status-dot"></span>QueryAccountBalance</small>
+              </span>
+              <span class="bd-account__balance">
+                <strong>¥10,000.00</strong>
+                <small>CNY</small>
+              </span>
+            </button>
+            <button class="bd-account" type="button">
+              <span class="bd-account__avatar">N</span>
+              <span class="bd-account__identity">
+                <strong>NewAPI 节点</strong>
+                <small><span class="bd-status-dot bd-status-dot--warning"></span>余额预警</small>
+              </span>
+              <span class="bd-account__balance">
+                <strong>$ 8.20</strong>
+                <small>USD</small>
+              </span>
+            </button>
+          </div>
+        </aside>
+
+        <section class="bd-detail">
+          <div class="bd-detail__head">
+            <div class="bd-detail__title">
+              <span class="bd-account__avatar">S</span>
+              <div>
+                <span class="bd-status-chip"><span class="bd-status-dot"></span>运行正常</span>
+                <h2>全部上游 · 组合视图</h2>
+                <p>兼容 API · 阿里云 BSS · 网页会话（示意数据）</p>
+              </div>
+            </div>
+            <div class="bd-detail__actions">
+              <button class="bd-icon-button" type="button" title="刷新">↻</button>
+              <button class="bd-icon-button" type="button" title="编辑">✎</button>
+              <button class="bd-button bd-button--secondary" type="button">同步</button>
+            </div>
+          </div>
+
+          <div class="bd-balance-grid">
+            <article class="bd-balance-card">
+              <div>
+                <p>可用余额</p>
+                <span>BALANCE</span>
+              </div>
+              <strong>¥ 12,486.32</strong>
+              <small>主展示字段 · AvailableAmount 映射</small>
+            </article>
+            <article class="bd-balance-card">
+              <div>
+                <p>累计用量</p>
+                <span>USED</span>
+              </div>
+              <strong>¥ 3,204.18</strong>
+              <small>本月已消耗（示意）</small>
+            </article>
+            <article class="bd-balance-card bd-balance-card--warning">
+              <div>
+                <p>低余额阈值</p>
+                <span>ALERT</span>
+              </div>
+              <strong>¥ 100.00</strong>
+              <small>1 个账号触发预警</small>
+            </article>
+          </div>
+
+          <div class="bd-subscriptions">
+            <div class="bd-section-head bd-section-head--wide">
+              <h3>订阅与额度</h3>
+              <span>2</span>
+            </div>
+            <div class="bd-subscription-list">
+              <article class="bd-subscription">
+                <div class="bd-subscription__head">
+                  <h4>团队标准版</h4>
+                  <strong>38% 已用</strong>
+                </div>
+                <div class="bd-progress"><span style="width:38%"></span></div>
+                <div class="bd-subscription__legend">
+                  <span>已用 <strong>271,640</strong></span>
+                  <span>剩余 <strong>428,360</strong></span>
+                </div>
+              </article>
+              <article class="bd-subscription">
+                <div class="bd-subscription__head">
+                  <h4>阿里云现金账本</h4>
+                  <strong>可用</strong>
+                </div>
+                <div class="bd-progress"><span style="width:72%"></span></div>
+                <div class="bd-subscription__legend">
+                  <span>现金 <strong>¥10,000</strong></span>
+                  <span>币种 <strong>CNY</strong></span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="bd-detail__footer">
+            <span>PROVIDER · mixed</span>
+            <span>THEME · aboutme / stormzhang</span>
+            <span>SYNC · 60s</span>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="demo-foot">
+      静态预览 · 路径
+      <code style="color:rgba(56,249,215,.7)">zhangdan/demo/brand-apply-demo.html</code>
+      · Token 来自
+      <a href="../../aboutme/tokens/brand.css">aboutme/tokens/brand.css</a>
+    </footer>
+  </div>
+</body>
+</html>

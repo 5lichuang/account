@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>上游额度卡片墙 · Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050510;
+      --surface: #0a0a18;
+      --card: rgba(10, 12, 28, 0.82);
+      --accent: #38f9d7;
+      --accent-rgb: 56, 249, 215;
+      --blue: #60a5fa;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --subtle: rgba(240, 245, 255, 0.45);
+      --line: rgba(56, 249, 215, 0.12);
+      --line-strong: rgba(56, 249, 215, 0.22);
+      --amber: #fbbf24;
+      --coral: #f87171;
+      --font-display: "Space Grotesk", "SF Pro Display", sans-serif;
+      --font-cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", var(--font-cn), sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 18% 35%, rgba(25, 10, 60, 0.45) 0%, transparent 50%),
+        radial-gradient(ellipse at 82% 12%, rgba(10, 50, 70, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse at 55% 88%, rgba(15, 30, 55, 0.35) 0%, transparent 50%),
+        #050510;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.75;
+      background-image:
+        radial-gradient(1px 1px at 10% 18%, rgba(255,255,255,.5), transparent),
+        radial-gradient(1px 1px at 28% 70%, rgba(255,255,255,.3), transparent),
+        radial-gradient(1.2px 1.2px at 62% 32%, rgba(56,249,215,.45), transparent),
+        radial-gradient(1px 1px at 84% 58%, rgba(96,165,250,.4), transparent),
+        radial-gradient(1px 1px at 48% 88%, rgba(255,255,255,.28), transparent);
+      animation: twinkle 7s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.5; }
+      to { opacity: 0.9; }
+    }
+    .glow {
+      position: fixed;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(circle, rgba(56,249,215,.07), transparent 60%);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 2;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 20px 18px 64px;
+    }
+
+    /* banner */
+    .banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(56, 249, 215, 0.05);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .banner strong {
+      color: var(--accent);
+      font-family: var(--font-display);
+      letter-spacing: 0.06em;
+    }
+
+    /* header */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(56,249,215,.3);
+      background: #050510;
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 0 16px rgba(56,249,215,.18);
+    }
+    .brand strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 16px;
+      background: linear-gradient(90deg, #38f9d7, #60a5fa, #38f9d7);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+      to { background-position: 200% center; }
+    }
+    .brand small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: rgba(56,249,215,.05);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .btn:hover {
+      border-color: rgba(56,249,215,.45);
+      box-shadow: 0 0 16px rgba(56,249,215,.12);
+    }
+    .btn-primary {
+      border: 0;
+      background: linear-gradient(135deg, #38f9d7, #60a5fa);
+      color: #04120f;
+      box-shadow: 0 0 20px rgba(56,249,215,.22);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 28px rgba(56,249,215,.38);
+      transform: translateY(-1px);
+    }
+
+    /* intro */
+    .intro {
+      margin-bottom: 18px;
+    }
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .intro h1 {
+      margin: 0;
+      font-family: var(--font-cn);
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .intro p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 520px;
+    }
+
+    /* strip */
+    .strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      margin: 18px 0 22px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(56,249,215,.04);
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: .15s ease;
+      user-select: none;
+    }
+    .chip:hover, .chip.is-active {
+      border-color: rgba(56,249,215,.35);
+      color: var(--text);
+      background: rgba(56,249,215,.08);
+    }
+    .chip.is-active {
+      box-shadow: 0 0 12px rgba(56,249,215,.12);
+    }
+    .chip b {
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+    .chip--warn b { color: var(--amber); }
+    .chip--err b { color: var(--coral); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .toolbar h2 {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-cn);
+    }
+    .toolbar .meta {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+    .sort {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .sort select {
+      min-height: 34px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line-strong);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+    }
+
+    /* grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 620px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 240px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.28);
+      cursor: pointer;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: rise .7s var(--ease) forwards;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .card:hover {
+      border-color: rgba(56,249,215,.32);
+      box-shadow: 0 0 28px rgba(56,249,215,.12), 0 16px 40px rgba(0,0,0,.35);
+      transform: translateY(-3px);
+    }
+    .card.is-warning {
+      border-color: rgba(251, 191, 36, 0.35);
+      background: linear-gradient(180deg, rgba(251,191,36,.06), rgba(10,12,28,.82));
+    }
+    .card.is-error {
+      border-color: rgba(248, 113, 113, 0.35);
+      background: linear-gradient(180deg, rgba(248,113,113,.06), rgba(10,12,28,.82));
+    }
+    .card.is-disabled {
+      opacity: 0.55 !important;
+      filter: grayscale(0.25);
+    }
+    .card.is-hidden { display: none; }
+
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .card__who {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: rgba(56,249,215,.1);
+      border: 1px solid rgba(56,249,215,.2);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .card__who strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card__who small {
+      display: block;
+      margin-top: 3px;
+      color: var(--subtle);
+      font-size: 11px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(56,249,215,.1);
+      color: #5eead4;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(56,249,215,.7);
+    }
+    .status--warning {
+      background: rgba(251,191,36,.12);
+      color: #fcd34d;
+    }
+    .status--warning .dot { background: var(--amber); box-shadow: 0 0 8px rgba(251,191,36,.6); }
+    .status--error {
+      background: rgba(248,113,113,.12);
+      color: #fca5a5;
+    }
+    .status--error .dot { background: var(--coral); box-shadow: 0 0 8px rgba(248,113,113,.55); }
+    .status--disabled {
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+    .status--disabled .dot { background: #6b7280; box-shadow: none; }
+
+    .card__amount {
+      margin-top: 2px;
+    }
+    .card__amount .label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card__amount .label span {
+      font-family: var(--font-display);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--subtle);
+    }
+    .card__amount .value {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      background: linear-gradient(90deg, #e6edf3, #38f9d7 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card.is-warning .card__amount .value {
+      background: linear-gradient(90deg, #fde68a, #fbbf24);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .card.is-error .card__amount .value {
+      background: none;
+      -webkit-text-fill-color: #fca5a5;
+      color: #fca5a5;
+    }
+    .card__amount .hint {
+      margin-top: 6px;
+      color: var(--subtle);
+      font-size: 11px;
+    }
+
+    .progress {
+      height: 6px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .progress > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38f9d7, #60a5fa);
+      box-shadow: 0 0 10px rgba(56,249,215,.4);
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 7px;
+      font-size: 10px;
+      color: var(--subtle);
+    }
+    .progress-meta b { color: var(--muted); font-weight: 650; }
+
+    .breakdown {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .breakdown span {
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.2);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .breakdown b { color: var(--text); font-weight: 650; }
+
+    .card__foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 4px;
+      border-top: 1px solid rgba(56,249,215,.08);
+    }
+    .card__foot .sync {
+      font-size: 11px;
+      color: var(--subtle);
+    }
+    .card__foot .actions {
+      display: flex;
+      gap: 6px;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--line-strong);
+      background: rgba(56,249,215,.04);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      transition: .15s ease;
+    }
+    .icon-btn:hover {
+      color: var(--accent);
+      border-color: rgba(56,249,215,.4);
+      box-shadow: 0 0 12px rgba(56,249,215,.12);
+    }
+
+    .error-line {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.2);
+      color: #fca5a5;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    /* drawer */
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .drawer-mask.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer {
+      position: fixed;
+      z-index: 60;
+      top: 0;
+      right: 0;
+      width: min(420px, 100%);
+      height: 100%;
+      padding: 24px 22px;
+      border-left: 1px solid var(--line);
+      background: rgba(8, 10, 22, 0.96);
+      box-shadow: -20px 0 60px rgba(0,0,0,.45);
+      transform: translateX(100%);
+      transition: transform .35s var(--ease);
+      overflow-y: auto;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 8px 0 4px;
+    }
+    .drawer .sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+    .drawer .big {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(90deg, #e6edf3, #38f9d7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 12px 0 6px;
+    }
+    .drawer .rows {
+      display: grid;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .drawer .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(56,249,215,.03);
+      font-size: 13px;
+    }
+    .drawer .row span { color: var(--muted); }
+    .drawer .row b { font-weight: 650; }
+    .drawer .close-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      margin-top: 36px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--subtle);
+      letter-spacing: 0.04em;
+    }
+    footer code { color: rgba(56,249,215,.65); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .stars, .brand strong { animation: none !important; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="stars"></div>
+  <div class="glow" id="glow"></div>
+
+  <div class="wrap">
+    <div class="banner">
+      <div>
+        <strong>QUOTA CARDS DEMO</strong>
+        · 主体：每个上游一张额度卡 · 静态示意 · 未接生产数据
+      </div>
+      <div style="font-size:11px">点击卡片可看详情抽屉</div>
+    </div>
+
+    <header class="header">
+      <div class="brand">
+        <div class="mark">S</div>
+        <div>
+          <strong>Balance Desk</strong>
+          <small>上游额度一屏扫完</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" type="button" id="btnRefresh">↻ 刷新全部</button>
+        <button class="btn btn-primary" type="button">＋ 添加上游</button>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p class="kicker">Upstream Quotas</p>
+      <h1>每个上游，还剩多少额度</h1>
+      <p>主数字是可用余额；预警优先靠前。进度、充值/馈赠拆分有则显示，没有不强凑。</p>
+    </section>
+
+    <div class="strip" id="filters" role="tablist" aria-label="筛选">
+      <button class="chip is-active" type="button" data-filter="all" role="tab" aria-selected="true">
+        全部 <b>4</b>
+      </button>
+      <button class="chip chip--warn" type="button" data-filter="warning" role="tab">
+        预警 <b>1</b>
+      </button>
+      <button class="chip chip--err" type="button" data-filter="error" role="tab">
+        异常 <b>1</b>
+      </button>
+      <button class="chip" type="button" data-filter="healthy" role="tab">
+        正常 <b>2</b>
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <div>
+        <h2>上游额度</h2>
+        <div class="meta" id="sortHint">排序：预警优先 → 余额从低到高</div>
+      </div>
+      <label class="sort">
+        排序
+        <select id="sortSelect">
+          <option value="priority">预警优先 / 余额升序</option>
+          <option value="balance-desc">余额从高到低</option>
+          <option value="name">名称</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid" id="grid" aria-label="上游额度卡片"></div>
+
+    <footer>
+      Demo 路径 <code>zhangdan/demo/quota-cards-demo.html</code>
+      · 确认后可合入 BalanceDashboard 主视图
+    </footer>
+  </div>
+
+  <div class="drawer-mask" id="mask"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="close-row">
+      <p class="kicker" style="margin:0">ACCOUNT DETAIL</p>
+      <button class="icon-btn" type="button" id="drawerClose" aria-label="关闭">×</button>
+    </div>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <script>
+    const accounts = [
+      {
+        id: "newapi",
+        name: "NewAPI 节点",
+        provider: "兼容 API",
+        letter: "N",
+        status: "warning",
+        statusLabel: "余额预警",
+        balance: 8.2,
+        currency: "USD",
+        display: "$ 8.20",
+        hint: "预警线 $ 10.00 · 低于阈值",
+        progress: 18,
+        progressLeft: "已用 82%",
+        progressRight: "剩余 $ 8.20",
+        breakdown: null,
+        sync: "3 分钟前",
+        error: null,
+        detail: "余额接近预警线，建议尽快充值。",
+      },
+      {
+        id: "cloudsky",
+        name: "云天畅想",
+        provider: "兼容 API",
+        letter: "云",
+        status: "healthy",
+        statusLabel: "运行正常",
+        balance: 428.36,
+        currency: "CNY",
+        display: "¥ 428.36",
+        hint: "预警线 ¥ 100.00",
+        progress: 61,
+        progressLeft: "已用 271,640 点",
+        progressRight: "剩余 428,360 点",
+        breakdown: null,
+        sync: "刚刚",
+        error: null,
+        detail: "团队标准版订阅进行中。",
+      },
+      {
+        id: "aliyun",
+        name: "阿里云 BSS",
+        provider: "阿里云 BSS",
+        letter: "阿",
+        status: "healthy",
+        statusLabel: "运行正常",
+        balance: 10000,
+        currency: "CNY",
+        display: "¥ 10,000.00",
+        hint: "QueryAccountBalance · 可用额度",
+        progress: null,
+        progressLeft: null,
+        progressRight: null,
+        breakdown: null,
+        sync: "1 分钟前",
+        error: null,
+        detail: "仅展示可用额度，无订阅进度。",
+      },
+      {
+        id: "tokenpony",
+        name: "TokenPony",
+        provider: "Cookie 会话",
+        letter: "T",
+        status: "error",
+        statusLabel: "同步异常",
+        balance: 156.4,
+        currency: "USD",
+        display: "$ 156.40",
+        hint: "显示最近一次成功余额",
+        progress: null,
+        progressLeft: null,
+        progressRight: null,
+        breakdown: [
+          { k: "充值余额", v: "$ 120.00" },
+          { k: "馈赠金", v: "$ 36.40" },
+        ],
+        sync: "会话失效",
+        error: "Cookie 已失效，请重新登录并更新会话。",
+        detail: "会话需人工续期。",
+      },
+    ];
+
+    const grid = document.getElementById("grid");
+    const sortSelect = document.getElementById("sortSelect");
+    const sortHint = document.getElementById("sortHint");
+    let filter = "all";
+    let sort = "priority";
+
+    const statusRank = { warning: 0, error: 1, healthy: 2, disabled: 3 };
+
+    function sortedList() {
+      let list = accounts.slice();
+      if (filter !== "all") list = list.filter((a) => a.status === filter);
+      if (sort === "priority") {
+        list.sort((a, b) => statusRank[a.status] - statusRank[b.status] || a.balance - b.balance);
+      } else if (sort === "balance-desc") {
+        list.sort((a, b) => b.balance - a.balance);
+      } else {
+        list.sort((a, b) => a.name.localeCompare(b.name, "zh"));
+      }
+      return list;
+    }
+
+    function cardHtml(a, index) {
+      const statusClass =
+        a.status === "warning"
+          ? "status--warning"
+          : a.status === "error"
+            ? "status--error"
+            : a.status === "disabled"
+              ? "status--disabled"
+              : "";
+      const cardState =
+        a.status === "warning"
+          ? " is-warning"
+          : a.status === "error"
+            ? " is-error"
+            : a.status === "disabled"
+              ? " is-disabled"
+              : "";
+      return `
+        <button class="card${cardState}" type="button" data-id="${a.id}" style="animation-delay:${index * 0.08}s">
+          <div class="card__top">
+            <div class="card__who">
+              <span class="avatar">${a.letter}</span>
+              <span>
+                <strong>${a.name}</strong>
+                <small>${a.provider}</small>
+              </span>
+            </div>
+            <span class="status ${statusClass}"><span class="dot"></span>${a.statusLabel}</span>
+          </div>
+          <div class="card__amount">
+            <div class="label"><p>可用额度</p><span>${a.currency}</span></div>
+            <div class="value">${a.display}</div>
+            <div class="hint">${a.hint}</div>
+          </div>
+          ${
+            a.progress != null
+              ? `<div>
+                  <div class="progress"><i style="width:${a.progress}%"></i></div>
+                  <div class="progress-meta"><span>${a.progressLeft}</span><span><b>${a.progressRight}</b></span></div>
+                </div>`
+              : ""
+          }
+          ${
+            a.breakdown
+              ? `<div class="breakdown">${a.breakdown
+                  .map((x) => `<span>${x.k} <b>${x.v}</b></span>`)
+                  .join("")}</div>`
+              : ""
+          }
+          ${a.error ? `<div class="error-line">${a.error}</div>` : ""}
+          <div class="card__foot">
+            <span class="sync">同步 · ${a.sync}</span>
+            <span class="actions">
+              <span class="icon-btn" title="刷新" data-action="refresh">↻</span>
+              <span class="icon-btn" title="详情" data-action="open">→</span>
+            </span>
+          </div>
+        </button>
+      `;
+    }
+
+    function render() {
+      const list = sortedList();
+      grid.innerHTML = list.map((a, i) => cardHtml(a, i)).join("");
+      grid.querySelectorAll(".card").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          const action = e.target.closest("[data-action]")?.dataset.action;
+          if (action === "refresh") {
+            e.stopPropagation();
+            el.style.outline = "1px solid rgba(56,249,215,.5)";
+            setTimeout(() => (el.style.outline = ""), 400);
+            return;
+          }
+          openDrawer(el.dataset.id);
+        });
+      });
+    }
+
+    // filters
+    document.getElementById("filters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-filter]");
+      if (!btn) return;
+      filter = btn.dataset.filter;
+      document.querySelectorAll("#filters .chip").forEach((c) => {
+        const on = c === btn;
+        c.classList.toggle("is-active", on);
+        c.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      render();
+    });
+
+    sortSelect.addEventListener("change", () => {
+      sort = sortSelect.value;
+      sortHint.textContent =
+        sort === "priority"
+          ? "排序：预警优先 → 余额从低到高"
+          : sort === "balance-desc"
+            ? "排序：余额从高到低"
+            : "排序：名称";
+      render();
+    });
+
+    document.getElementById("btnRefresh").addEventListener("click", () => {
+      grid.querySelectorAll(".card").forEach((el, i) => {
+        el.style.animation = "none";
+        void el.offsetWidth;
+        el.style.animation = `rise .7s var(--ease) ${i * 0.06}s forwards`;
+      });
+    });
+
+    // drawer
+    const mask = document.getElementById("mask");
+    const drawer = document.getElementById("drawer");
+    const drawerBody = document.getElementById("drawerBody");
+
+    function openDrawer(id) {
+      const a = accounts.find((x) => x.id === id);
+      if (!a) return;
+      drawerBody.innerHTML = `
+        <span class="status ${
+          a.status === "warning"
+            ? "status--warning"
+            : a.status === "error"
+              ? "status--error"
+              : ""
+        }"><span class="dot"></span>${a.statusLabel}</span>
+        <h3>${a.name}</h3>
+        <p class="sub">${a.provider} · ${a.detail}</p>
+        <div class="label" style="color:var(--muted);font-size:12px">可用额度</div>
+        <div class="big">${a.display}</div>
+        <div class="rows">
+          <div class="row"><span>币种</span><b>${a.currency}</b></div>
+          <div class="row"><span>最近同步</span><b>${a.sync}</b></div>
+          <div class="row"><span>说明</span><b>${a.hint}</b></div>
+        </div>
+        ${a.error ? `<div class="error-line">${a.error}</div>` : ""}
+        <div style="display:flex;gap:8px;margin-top:20px">
+          <button class="btn" type="button">编辑配置</button>
+          <button class="btn btn-primary" type="button">刷新此账号</button>
+        </div>
+      `;
+      mask.classList.add("open");
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+    }
+    function closeDrawer() {
+      mask.classList.remove("open");
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+    }
+    mask.addEventListener("click", closeDrawer);
+    document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeDrawer();
+    });
+
+    // cursor glow
+    const glow = document.getElementById("glow");
+    window.addEventListener("pointermove", (e) => {
+      glow.style.opacity = "1";
+      glow.style.left = e.clientX + "px";
+      glow.style.top = e.clientY + "px";
+    });
+
+    render();
+  </script>
+</body>
+</html>

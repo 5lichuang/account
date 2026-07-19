@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>上游额度卡 · 多风格对照</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050510;
+      --accent: #38f9d7;
+      --blue: #60a5fa;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --subtle: rgba(240, 245, 255, 0.42);
+      --line: rgba(56, 249, 215, 0.12);
+      --amber: #fbbf24;
+      --coral: #f87171;
+      --font-d: "Space Grotesk", sans-serif;
+      --font-cn: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, var(--font-cn), sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(25,10,60,.4), transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(10,40,60,.3), transparent 45%),
+        #050510;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 28px 18px 72px;
+    }
+    .top {
+      margin-bottom: 28px;
+    }
+    .top .kicker {
+      color: var(--accent);
+      font-family: var(--font-d);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .top h1 {
+      font-size: clamp(22px, 3.5vw, 30px);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .top p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 640px;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 8px;
+    }
+    .nav a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(56,249,215,.04);
+    }
+    .nav a:hover { color: var(--accent); border-color: rgba(56,249,215,.35); }
+
+    section.style-block {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(56,249,215,.1);
+    }
+    .style-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .style-head h2 {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .style-head h2 em {
+      font-style: normal;
+      font-family: var(--font-d);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,249,215,.25);
+      background: rgba(56,249,215,.08);
+    }
+    .style-head .desc {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 420px;
+      text-align: right;
+    }
+    @media (max-width: 640px) {
+      .style-head .desc { text-align: left; }
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 1000px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .tag .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: currentColor;
+    }
+    .tag-ok { color: #5eead4; background: rgba(56,249,215,.1); }
+    .tag-warn { color: #fcd34d; background: rgba(251,191,36,.12); }
+    .tag-err { color: #fca5a5; background: rgba(248,113,113,.12); }
+
+    /* ========== A Compact Glass ========== */
+    .a-card {
+      padding: 12px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(10,12,28,.82);
+      backdrop-filter: blur(10px);
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+      cursor: default;
+    }
+    .a-card:hover {
+      border-color: rgba(56,249,215,.32);
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(56,249,215,.1);
+    }
+    .a-card.is-warn { border-color: rgba(251,191,36,.35); }
+    .a-card.is-err { border-color: rgba(248,113,113,.35); }
+    .a-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .a-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .a-av {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      background: rgba(56,249,215,.1);
+      border: 1px solid rgba(56,249,215,.18);
+      flex: 0 0 auto;
+    }
+    .a-name strong {
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .a-name small {
+      display: block;
+      font-size: 10px;
+      color: var(--subtle);
+      margin-top: 1px;
+    }
+    .a-amt {
+      font-family: var(--font-d);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+    }
+    .a-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--subtle);
+      margin-top: auto;
+    }
+    .a-bar {
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .a-bar i {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, #38f9d7, #60a5fa);
+    }
+
+    /* ========== B Dense Row ========== */
+    .b-card {
+      display: grid;
+      grid-template-columns: 28px minmax(0,1.2fr) minmax(0,.9fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(8,10,20,.75);
+      min-height: 52px;
+      transition: background .15s, border-color .15s;
+    }
+    .b-card:hover {
+      background: rgba(56,249,215,.06);
+      border-color: rgba(56,249,215,.28);
+    }
+    .b-card.is-warn { border-color: rgba(251,191,36,.3); }
+    .b-card.is-err { border-color: rgba(248,113,113,.3); }
+    .b-av {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      background: rgba(56,249,215,.1);
+    }
+    .b-id strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .b-id small {
+      display: block;
+      font-size: 10px;
+      color: var(--subtle);
+      margin-top: 1px;
+    }
+    .b-amt {
+      font-family: var(--font-d);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      text-align: right;
+    }
+    .b-amt small {
+      display: block;
+      font-size: 9px;
+      color: var(--subtle);
+      font-weight: 600;
+      margin-top: 1px;
+    }
+
+    /* ========== C Metric Tile ========== */
+    .c-card {
+      padding: 12px 12px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: linear-gradient(165deg, rgba(56,249,215,.06), rgba(10,12,28,.9) 55%);
+      min-height: 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .c-card::after {
+      content: "";
+      position: absolute;
+      right: 12px; bottom: 10px;
+      width: 18px; height: 2px;
+      border-radius: 2px;
+      background: rgba(56,249,215,.35);
+    }
+    .c-card.is-warn::after { background: var(--amber); }
+    .c-card.is-err::after { background: var(--coral); }
+    .c-card:hover {
+      border-color: rgba(56,249,215,.25);
+      box-shadow: 0 0 16px rgba(56,249,215,.08);
+    }
+    .c-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 650;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .c-amt {
+      font-family: var(--font-d);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+    }
+    .c-foot {
+      font-size: 10px;
+      color: var(--subtle);
+      margin-top: auto;
+      padding-right: 24px;
+    }
+
+    /* ========== D Chip Strip ========== */
+    .d-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px 8px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(10,12,28,.7);
+      min-height: 44px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .d-card:hover {
+      border-color: rgba(56,249,215,.35);
+      box-shadow: 0 0 14px rgba(56,249,215,.1);
+    }
+    .d-card.is-warn { border-color: rgba(251,191,36,.35); }
+    .d-card.is-err { border-color: rgba(248,113,113,.35); }
+    .d-av {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700;
+      color: #04120f;
+      background: linear-gradient(135deg, #38f9d7, #60a5fa);
+      flex: 0 0 auto;
+    }
+    .d-mid { min-width: 0; flex: 1; }
+    .d-mid strong {
+      display: block;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .d-mid small {
+      font-size: 10px;
+      color: var(--subtle);
+    }
+    .d-amt {
+      font-family: var(--font-d);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ========== E Split Mini ========== */
+    .e-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 10px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.28);
+      min-height: 88px;
+      align-content: start;
+    }
+    .e-card:hover { border-color: rgba(56,249,215,.3); }
+    .e-card.is-warn {
+      background: linear-gradient(90deg, rgba(251,191,36,.08), transparent 50%), rgba(0,0,0,.28);
+      border-color: rgba(251,191,36,.3);
+    }
+    .e-card.is-err {
+      background: linear-gradient(90deg, rgba(248,113,113,.08), transparent 50%), rgba(0,0,0,.28);
+      border-color: rgba(248,113,113,.3);
+    }
+    .e-name {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .e-name small {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--subtle);
+      margin-top: 2px;
+    }
+    .e-amt {
+      font-family: var(--font-d);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      text-align: right;
+      align-self: start;
+    }
+    .e-parts {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .e-parts span {
+      font-size: 10px;
+      color: var(--muted);
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .e-parts b { color: var(--text); font-weight: 650; }
+
+    .pick {
+      margin-top: 40px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(56,249,215,.18);
+      background: rgba(56,249,215,.05);
+    }
+    .pick h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .pick ul {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .pick li b { color: var(--accent); font-weight: 650; }
+    .pick p {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--subtle);
+    }
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--subtle);
+    }
+    footer code { color: rgba(56,249,215,.65); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <p class="kicker">Style Lab · Smaller Cards</p>
+      <h1>上游额度卡 · 五种更小的参考风格</h1>
+      <p>
+        相对上一版大卡，以下方案都把信息压到更小的单元里，方便一屏多看几个上游。
+        滚动对比，记下你偏好的代号（A–E）即可。
+      </p>
+      <nav class="nav">
+        <a href="#a">A 紧凑玻璃卡</a>
+        <a href="#b">B 密排行</a>
+        <a href="#c">C 指标磁贴</a>
+        <a href="#d">D 胶囊条</a>
+        <a href="#e">E 双栏迷你</a>
+        <a href="quota-cards-demo.html">上一版大卡 Demo</a>
+      </nav>
+    </header>
+
+    <!-- A -->
+    <section class="style-block" id="a">
+      <div class="style-head">
+        <h2><em>A</em> 紧凑玻璃卡 Compact Glass</h2>
+        <p class="desc">约 4 列；高度 ~118px。保留进度条，信息完整但体量小。推荐默认。</p>
+      </div>
+      <div class="grid grid-4">
+        <article class="a-card is-warn">
+          <div class="a-top">
+            <div class="a-name">
+              <span class="a-av">N</span>
+              <span><strong>NewAPI 节点</strong><small>兼容 API</small></span>
+            </div>
+            <span class="tag tag-warn"><span class="dot"></span>预警</span>
+          </div>
+          <div class="a-amt">$ 8.20</div>
+          <div class="a-bar"><i style="width:18%"></i></div>
+          <div class="a-meta"><span>低于 $10</span><span>3 分钟前</span></div>
+        </article>
+        <article class="a-card">
+          <div class="a-top">
+            <div class="a-name">
+              <span class="a-av">云</span>
+              <span><strong>云天畅想</strong><small>兼容 API</small></span>
+            </div>
+            <span class="tag tag-ok"><span class="dot"></span>正常</span>
+          </div>
+          <div class="a-amt">¥ 428.36</div>
+          <div class="a-bar"><i style="width:61%"></i></div>
+          <div class="a-meta"><span>剩余 61%</span><span>刚刚</span></div>
+        </article>
+        <article class="a-card">
+          <div class="a-top">
+            <div class="a-name">
+              <span class="a-av">阿</span>
+              <span><strong>阿里云 BSS</strong><small>阿里云</small></span>
+            </div>
+            <span class="tag tag-ok"><span class="dot"></span>正常</span>
+          </div>
+          <div class="a-amt">¥ 10,000</div>
+          <div class="a-bar"><i style="width:0;opacity:.2"></i></div>
+          <div class="a-meta"><span>可用额度</span><span>1 分钟前</span></div>
+        </article>
+        <article class="a-card is-err">
+          <div class="a-top">
+            <div class="a-name">
+              <span class="a-av">T</span>
+              <span><strong>TokenPony</strong><small>Cookie</small></span>
+            </div>
+            <span class="tag tag-err"><span class="dot"></span>异常</span>
+          </div>
+          <div class="a-amt">$ 156.40</div>
+          <div class="a-bar"><i style="width:72%"></i></div>
+          <div class="a-meta"><span>会话失效</span><span>上次成功</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- B -->
+    <section class="style-block" id="b">
+      <div class="style-head">
+        <h2><em>B</em> 密排行 Dense Row</h2>
+        <p class="desc">行高 ~52px，像精简表格。上游很多时扫读最快，进度条弱化。</p>
+      </div>
+      <div class="grid" style="gap:6px">
+        <article class="b-card is-warn">
+          <span class="b-av">N</span>
+          <div class="b-id"><strong>NewAPI 节点</strong><small>兼容 API · 低于预警</small></div>
+          <div class="b-amt">$ 8.20<small>USD</small></div>
+          <span class="tag tag-warn"><span class="dot"></span>预警</span>
+        </article>
+        <article class="b-card">
+          <span class="b-av">云</span>
+          <div class="b-id"><strong>云天畅想</strong><small>兼容 API · 订阅 61%</small></div>
+          <div class="b-amt">¥ 428.36<small>CNY</small></div>
+          <span class="tag tag-ok"><span class="dot"></span>正常</span>
+        </article>
+        <article class="b-card">
+          <span class="b-av">阿</span>
+          <div class="b-id"><strong>阿里云 BSS</strong><small>QueryAccountBalance</small></div>
+          <div class="b-amt">¥ 10,000.00<small>CNY</small></div>
+          <span class="tag tag-ok"><span class="dot"></span>正常</span>
+        </article>
+        <article class="b-card is-err">
+          <span class="b-av">T</span>
+          <div class="b-id"><strong>TokenPony</strong><small>Cookie 会话失效</small></div>
+          <div class="b-amt">$ 156.40<small>上次成功</small></div>
+          <span class="tag tag-err"><span class="dot"></span>异常</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- C -->
+    <section class="style-block" id="c">
+      <div class="style-head">
+        <h2><em>C</em> 指标磁贴 Metric Tile</h2>
+        <p class="desc">高度 ~96px，更像仪表盘指标。名称次要、数字绝对主导。</p>
+      </div>
+      <div class="grid grid-4">
+        <article class="c-card is-warn">
+          <div class="c-label"><span>NewAPI 节点</span><span class="tag tag-warn">预警</span></div>
+          <div class="c-amt">$ 8.20</div>
+          <div class="c-foot">低于 $10 · 3 分钟前</div>
+        </article>
+        <article class="c-card">
+          <div class="c-label"><span>云天畅想</span><span class="tag tag-ok">正常</span></div>
+          <div class="c-amt">¥ 428</div>
+          <div class="c-foot">剩余 61% · 刚刚</div>
+        </article>
+        <article class="c-card">
+          <div class="c-label"><span>阿里云 BSS</span><span class="tag tag-ok">正常</span></div>
+          <div class="c-amt">¥ 10k</div>
+          <div class="c-foot">可用额度 · 1 分钟前</div>
+        </article>
+        <article class="c-card is-err">
+          <div class="c-label"><span>TokenPony</span><span class="tag tag-err">异常</span></div>
+          <div class="c-amt">$ 156</div>
+          <div class="c-foot">会话失效 · 上次成功</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- D -->
+    <section class="style-block" id="d">
+      <div class="style-head">
+        <h2><em>D</em> 胶囊条 Chip Strip</h2>
+        <p class="desc">高度 ~44px，胶囊形。最省纵向空间，适合顶栏下方「快速扫余额」。</p>
+      </div>
+      <div class="grid grid-2">
+        <article class="d-card is-warn">
+          <span class="d-av">N</span>
+          <div class="d-mid"><strong>NewAPI 节点</strong><small>兼容 API · 预警</small></div>
+          <div class="d-amt">$ 8.20</div>
+        </article>
+        <article class="d-card">
+          <span class="d-av">云</span>
+          <div class="d-mid"><strong>云天畅想</strong><small>兼容 API · 正常</small></div>
+          <div class="d-amt">¥ 428.36</div>
+        </article>
+        <article class="d-card">
+          <span class="d-av">阿</span>
+          <div class="d-mid"><strong>阿里云 BSS</strong><small>阿里云 · 正常</small></div>
+          <div class="d-amt">¥ 10,000</div>
+        </article>
+        <article class="d-card is-err">
+          <span class="d-av">T</span>
+          <div class="d-mid"><strong>TokenPony</strong><small>Cookie · 异常</small></div>
+          <div class="d-amt">$ 156.40</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- E -->
+    <section class="style-block" id="e">
+      <div class="style-head">
+        <h2><em>E</em> 双栏迷你 Split Mini</h2>
+        <p class="desc">高度 ~88px。右上角大数字，底部分解充值/馈赠，适合有拆分的上游。</p>
+      </div>
+      <div class="grid grid-3">
+        <article class="e-card is-warn">
+          <div class="e-name">NewAPI 节点<small>兼容 API</small></div>
+          <div class="e-amt">$ 8.20</div>
+          <div class="e-parts">
+            <span>状态 <b>预警</b></span>
+            <span>线 <b>$10</b></span>
+          </div>
+        </article>
+        <article class="e-card">
+          <div class="e-name">云天畅想<small>兼容 API</small></div>
+          <div class="e-amt">¥ 428.36</div>
+          <div class="e-parts">
+            <span>已用 <b>39%</b></span>
+            <span>同步 <b>刚刚</b></span>
+          </div>
+        </article>
+        <article class="e-card is-err">
+          <div class="e-name">TokenPony<small>Cookie 会话</small></div>
+          <div class="e-amt">$ 156.40</div>
+          <div class="e-parts">
+            <span>充值 <b>$120</b></span>
+            <span>馈赠 <b>$36.4</b></span>
+            <span>状态 <b>异常</b></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div class="pick">
+      <h3>怎么选（快速建议）</h3>
+      <ul>
+        <li><b>A 紧凑玻璃卡</b> — 信息与密度平衡最好，3～12 个上游时首选</li>
+        <li><b>B 密排行</b> — 上游很多（10+），要像列表一样扫</li>
+        <li><b>C 指标磁贴</b> — 只关心数字大小，名称次要</li>
+        <li><b>D 胶囊条</b> — 极省高度，可当顶栏摘要 + 详情另开</li>
+        <li><b>E 双栏迷你</b> — 常有充值/馈赠拆分，或要底部标签</li>
+      </ul>
+      <p>也可以组合：例如默认 <b>A</b>，上游 &gt; 12 自动切 <b>B</b>；有拆分数据的卡用 <b>E</b> 底栏。</p>
+    </div>
+
+    <footer>
+      对照页 <code>zhangdan/demo/quota-cards-styles.html</code>
+      · 告诉我选 A/B/C/D/E（或组合），再合生产
+    </footer>
+  </div>
+</body>
+</html>

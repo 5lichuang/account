@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-mode="dark" data-theme="glass">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Balance Desk · 主题 & 展开 Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ========== Base tokens (overridden by mode/theme) ========== */
+    :root {
+      --font-d: "Space Grotesk", sans-serif;
+      --font-cn: "PingFang SC", "Microsoft YaHei", sans-serif;
+      --radius: 12px;
+      --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+      --dur: 420ms;
+    }
+
+    /* —— Mode: Dark —— */
+    html[data-mode="dark"] {
+      --bg: #050510;
+      --bg-elev: #0a0a18;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --subtle: rgba(240, 245, 255, 0.42);
+      --line: rgba(255, 255, 255, 0.08);
+      --panel: rgba(12, 14, 28, 0.88);
+      --panel-solid: #0c0e1c;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --glow-cursor: rgba(56, 249, 215, 0.08);
+      --chip-bg: rgba(255, 255, 255, 0.04);
+      --warn: #fbbf24;
+      --err: #f87171;
+      --ok: #34d399;
+    }
+
+    /* —— Mode: Light —— */
+    html[data-mode="light"] {
+      --bg: #f4f3ef;
+      --bg-elev: #fbfaf7;
+      --text: #172823;
+      --muted: #68756f;
+      --subtle: #8b948f;
+      --line: rgba(23, 40, 35, 0.1);
+      --panel: rgba(255, 255, 255, 0.92);
+      --panel-solid: #ffffff;
+      --shadow: 0 16px 40px rgba(23, 40, 35, 0.1);
+      --glow-cursor: rgba(13, 118, 95, 0.07);
+      --chip-bg: rgba(23, 40, 35, 0.04);
+      --warn: #bd7a24;
+      --err: #dc6a55;
+      --ok: #0d765f;
+    }
+
+    /* —— Theme accents (work in both modes) —— */
+    html[data-theme="glass"] {
+      --accent: #38f9d7;
+      --accent-2: #60a5fa;
+      --accent-ink: #04120f;
+      --card-bg: color-mix(in srgb, var(--panel) 90%, var(--accent) 4%);
+      --card-border: color-mix(in srgb, var(--accent) 22%, transparent);
+      --gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+    html[data-theme="mint"] {
+      --accent: #0d765f;
+      --accent-2: #14b8a6;
+      --accent-ink: #fff;
+      --card-bg: var(--panel);
+      --card-border: color-mix(in srgb, var(--accent) 18%, transparent);
+      --gradient: linear-gradient(135deg, #0d765f, #14b8a6);
+    }
+    html[data-mode="dark"][data-theme="mint"] {
+      --accent: #2dd4bf;
+      --accent-2: #5eead4;
+      --accent-ink: #042f2e;
+    }
+    html[data-theme="ocean"] {
+      --accent: #3b82f6;
+      --accent-2: #06b6d4;
+      --accent-ink: #fff;
+      --card-bg: var(--panel);
+      --card-border: color-mix(in srgb, var(--accent) 22%, transparent);
+      --gradient: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+    html[data-theme="violet"] {
+      --accent: #a78bfa;
+      --accent-2: #e879f9;
+      --accent-ink: #1e1033;
+      --card-bg: var(--panel);
+      --card-border: color-mix(in srgb, var(--accent) 25%, transparent);
+      --gradient: linear-gradient(135deg, #8b5cf6, #e879f9);
+    }
+    html[data-theme="amber"] {
+      --accent: #f59e0b;
+      --accent-2: #f97316;
+      --accent-ink: #1c1005;
+      --card-bg: var(--panel);
+      --card-border: color-mix(in srgb, var(--accent) 22%, transparent);
+      --gradient: linear-gradient(135deg, #f59e0b, #f97316);
+    }
+    html[data-theme="slate"] {
+      --accent: #64748b;
+      --accent-2: #94a3b8;
+      --accent-ink: #fff;
+      --card-bg: var(--panel);
+      --card-border: color-mix(in srgb, var(--accent) 20%, transparent);
+      --gradient: linear-gradient(135deg, #475569, #94a3b8);
+    }
+    html[data-mode="light"][data-theme="slate"] {
+      --accent: #334155;
+      --accent-2: #64748b;
+      --accent-ink: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, var(--font-cn), sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      transition: background .35s var(--ease-apple), color .35s var(--ease-apple);
+    }
+
+    /* ambient */
+    .nebula {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .4s;
+      background:
+        radial-gradient(ellipse at 18% 30%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 50%),
+        radial-gradient(ellipse at 80% 15%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent 45%);
+    }
+    html[data-mode="dark"] .nebula { opacity: 1; }
+    html[data-mode="light"] .nebula {
+      opacity: 0.55;
+      background:
+        radial-gradient(circle at 84% 3%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 28rem);
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .4s;
+      background-image:
+        radial-gradient(1px 1px at 12% 20%, rgba(255,255,255,.45), transparent),
+        radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,.28), transparent),
+        radial-gradient(1.2px 1.2px at 70% 30%, color-mix(in srgb, var(--accent) 55%, transparent), transparent),
+        radial-gradient(1px 1px at 88% 55%, color-mix(in srgb, var(--accent-2) 50%, transparent), transparent);
+      animation: twinkle 8s ease-in-out infinite alternate;
+    }
+    html[data-mode="dark"] .stars { opacity: 0.75; }
+    @keyframes twinkle {
+      from { opacity: 0.45; }
+      to { opacity: 0.85; }
+    }
+
+    /* cursor glow — stormzhang.ai style */
+    .cursor-glow {
+      position: fixed;
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(circle, var(--glow-cursor), transparent 58%);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity .25s;
+      mix-blend-mode: screen;
+    }
+    html[data-mode="light"] .cursor-glow {
+      mix-blend-mode: multiply;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 2;
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 22px 16px 80px;
+    }
+
+    .banner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--chip-bg);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .banner strong {
+      color: var(--accent);
+      font-family: var(--font-d);
+      letter-spacing: .06em;
+    }
+
+    /* controls */
+    .controls {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+    .controls h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .controls p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 720px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .row label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--subtle);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      min-width: 64px;
+    }
+    .seg {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      gap: 2px;
+    }
+    .seg button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: .2s var(--ease-apple);
+    }
+    .seg button.is-on {
+      background: var(--gradient);
+      color: var(--accent-ink);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+    .theme-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .theme-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: .2s var(--ease-apple);
+    }
+    .theme-pill:hover { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--text); }
+    .theme-pill.is-on {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      color: var(--text);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--sw);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    }
+
+    .kicker {
+      font-family: var(--font-d);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin: 8px 0 12px;
+    }
+    .section-title h2 { font-size: 15px; }
+    .section-title span { font-size: 11px; color: var(--subtle); }
+
+    /* grid of compact glass cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 118px;
+      padding: 12px 13px;
+      border-radius: var(--radius);
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      color: inherit;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition:
+        transform .25s var(--ease-apple),
+        border-color .2s,
+        box-shadow .25s var(--ease-apple);
+      z-index: 2;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .card.is-source {
+      /* source card while popover open — stay visible, slight dim */
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .card.is-warn { border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+    .card.is-err { border-color: color-mix(in srgb, var(--err) 45%, transparent); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .av {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      flex: 0 0 auto;
+    }
+    .who strong {
+      display: block;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .who small {
+      display: block;
+      font-size: 10px;
+      color: var(--subtle);
+      margin-top: 1px;
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .tag.warn { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); }
+    .tag.err { background: color-mix(in srgb, var(--err) 15%, transparent); color: var(--err); }
+    .amt {
+      font-family: var(--font-d);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+    }
+    .bar {
+      height: 3px;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--text) 8%, transparent);
+      overflow: hidden;
+    }
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--gradient);
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: auto;
+      font-size: 10px;
+      color: var(--subtle);
+    }
+
+    /* ========== Scheme ②: fly out from card center ==========
+       - Final position near card, clamped to viewport
+       - Start at card center (dx/dy) + scale down
+       - Spring to settle; close reverses toward card
+    */
+    .scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 28%, transparent);
+      backdrop-filter: blur(1.5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur) var(--ease-apple);
+    }
+    .scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .popover {
+      --pop-dx: 0px;
+      --pop-dy: 0px;
+      --pop-scale: 0.88;
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      top: 50%;
+      width: min(380px, calc(100vw - 32px));
+      max-height: min(72vh, 520px);
+      overflow: auto;
+      padding: 18px 18px 16px;
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+      background: var(--panel-solid);
+      box-shadow:
+        var(--shadow),
+        0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent),
+        0 0 40px color-mix(in srgb, var(--accent) 10%, transparent);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translate(calc(-50% + var(--pop-dx)), calc(-50% + var(--pop-dy))) scale(var(--pop-scale));
+      transform-origin: center center;
+      will-change: transform, opacity;
+      transition:
+        opacity var(--dur) var(--ease-apple),
+        transform 480ms var(--ease-spring),
+        visibility 0s linear var(--dur),
+        box-shadow var(--dur) var(--ease-apple);
+    }
+    .popover.open {
+      --pop-dx: 0px;
+      --pop-dy: 0px;
+      --pop-scale: 1;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity var(--dur) var(--ease-apple),
+        transform 480ms var(--ease-spring),
+        visibility 0s,
+        box-shadow var(--dur) var(--ease-apple);
+    }
+    .popover.closing {
+      pointer-events: none;
+    }
+
+    .popover-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .popover-head h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 4px 0 2px;
+    }
+    .popover-head .sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .icon-x {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      flex: 0 0 auto;
+      transition: .15s;
+    }
+    .icon-x:hover {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .popover .big {
+      font-family: var(--font-d);
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin: 6px 0 14px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .rows {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .row-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      font-size: 12px;
+    }
+    .row-item span { color: var(--muted); }
+    .row-item b { font-weight: 650; }
+    .popover-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .btn-primary {
+      border: 0;
+      background: var(--gradient);
+      color: var(--accent-ink);
+    }
+
+    .notes {
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--chip-bg);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .notes h3 {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .notes ul { padding-left: 18px; }
+    .notes li { margin: 4px 0; }
+    .notes b { color: var(--accent); }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--subtle);
+    }
+    footer code { color: var(--accent); opacity: .8; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .popover, .scrim, .card, .stars, .cursor-glow { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nebula"></div>
+  <div class="stars"></div>
+  <div class="cursor-glow" id="glow"></div>
+
+  <div class="wrap">
+    <div class="banner">
+      <div>
+        <strong>THEME LAB</strong>
+        · 白天/暗色 + 多主题 · 光标光晕 · 卡片 Apple 风格弹出（非全屏）
+      </div>
+      <div>静态 Demo · 未接生产数据</div>
+    </div>
+
+    <section class="controls">
+      <div>
+        <p class="kicker">Design Preview</p>
+        <h1>主题与展开交互预览</h1>
+        <p>
+          当前为 <b style="color:var(--accent)">方案 ②：从点击卡片中心飞出</b>。
+          弹出层约 380px，落点在卡片附近并自动夹紧视口；关闭时收回到原卡片。背后其它卡仍可见。
+        </p>
+      </div>
+
+      <div class="row">
+        <label>模式</label>
+        <div class="seg" id="modeSeg">
+          <button type="button" data-mode="dark" class="is-on">暗色 Dark</button>
+          <button type="button" data-mode="light">白天 Light</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label>主题</label>
+        <div class="theme-pills" id="themePills">
+          <button type="button" class="theme-pill is-on" data-theme="glass">
+            <span class="swatch" style="--sw:linear-gradient(135deg,#38f9d7,#60a5fa);background:linear-gradient(135deg,#38f9d7,#60a5fa)"></span>
+            Glass 薄荷青
+          </button>
+          <button type="button" class="theme-pill" data-theme="mint">
+            <span class="swatch" style="background:#0d765f"></span>
+            Mint 经典绿
+          </button>
+          <button type="button" class="theme-pill" data-theme="ocean">
+            <span class="swatch" style="background:#3b82f6"></span>
+            Ocean 海洋蓝
+          </button>
+          <button type="button" class="theme-pill" data-theme="violet">
+            <span class="swatch" style="background:#a78bfa"></span>
+            Violet 紫雾
+          </button>
+          <button type="button" class="theme-pill" data-theme="amber">
+            <span class="swatch" style="background:#f59e0b"></span>
+            Amber 暖琥珀
+          </button>
+          <button type="button" class="theme-pill" data-theme="slate">
+            <span class="swatch" style="background:#64748b"></span>
+            Slate 石墨灰
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <p class="kicker" style="margin:0 0 4px">Compact Glass Cards</p>
+        <h2>上游额度 · 点击展开</h2>
+      </div>
+      <span>方案 ② · 从卡片飞出 · 边界夹紧</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="notes">
+      <h3>设计说明（可沟通点）</h3>
+      <ul>
+        <li><b>模式</b>：Dark / Light 两套底与字色；主题只换强调色，不拆 12 套完整皮肤。</li>
+        <li><b>主题</b>：Glass（aboutme）、Mint（原浅色台风格）、Ocean、Violet、Amber、Slate 共 6 套。</li>
+        <li><b>展开（方案 ②）</b>：从源卡中心 scale + 位移飞到附近落点；约 480ms spring；关闭反向收回。</li>
+        <li><b>边界</b>：落点相对卡片中心，并向视口 margin 16px 夹紧，避免贴边裁切。</li>
+        <li><b>遮罩</b>：更轻，其它卡仍可扫读；点遮罩 / Esc / × 收起。</li>
+        <li><b>光标</b>：跟随径向光晕，参考 stormzhang.ai。</li>
+        <li><b>待确认</b>：方案 ② 是否定稿？默认 Dark+Glass？主题切换是否写入 localStorage？</li>
+      </ul>
+    </div>
+
+    <footer>
+      Demo · <code>zhangdan/demo/themes-expand-demo.html</code>
+    </footer>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="popover" id="popover" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="popover-head">
+      <div>
+        <span class="tag" id="pTag">正常</span>
+        <h3 id="pName">—</h3>
+        <div class="sub" id="pSub">—</div>
+      </div>
+      <button class="icon-x" type="button" id="pClose" aria-label="关闭">×</button>
+    </div>
+    <div class="big" id="pAmt">—</div>
+    <div class="rows" id="pRows"></div>
+    <div class="popover-actions">
+      <button class="btn" type="button">编辑配置</button>
+      <button class="btn btn-primary" type="button">刷新此账号</button>
+    </div>
+  </aside>
+
+  <script>
+    const accounts = [
+      { id: "n", name: "NewAPI 节点", letter: "N", provider: "兼容 API", status: "warn", statusLabel: "预警", amount: "$ 8.20", meta: "低于 $10 · 3 分钟前", pct: 18, note: "余额接近预警线", rows: [["币种", "USD"], ["预警线", "$ 10.00"], ["同步", "3 分钟前"]] },
+      { id: "c", name: "云天畅想", letter: "云", provider: "兼容 API", status: "ok", statusLabel: "正常", amount: "¥ 428.36", meta: "剩余 61% · 刚刚", pct: 61, note: "团队标准版进行中", rows: [["币种", "CNY"], ["订阅剩余", "61%"], ["同步", "刚刚"]] },
+      { id: "a", name: "阿里云 BSS", letter: "阿", provider: "阿里云", status: "ok", statusLabel: "正常", amount: "¥ 10,000", meta: "可用额度 · 1 分钟前", pct: 0, note: "QueryAccountBalance", rows: [["币种", "CNY"], ["接口", "QueryAccountBalance"], ["同步", "1 分钟前"]] },
+      { id: "t", name: "TokenPony", letter: "T", provider: "Cookie", status: "err", statusLabel: "异常", amount: "$ 156.40", meta: "会话失效 · 上次成功", pct: 72, note: "Cookie 需人工更新", rows: [["充值", "$ 120.00"], ["馈赠", "$ 36.40"], ["状态", "会话失效"]] },
+      { id: "o", name: "OpenRouter", letter: "O", provider: "兼容 API", status: "ok", statusLabel: "正常", amount: "$ 42.18", meta: "正常 · 5 分钟前", pct: 40, note: "按量计费", rows: [["币种", "USD"], ["模式", "Pay as you go"], ["同步", "5 分钟前"]] },
+      { id: "d", name: "DeepSeek", letter: "D", provider: "兼容 API", status: "ok", statusLabel: "正常", amount: "¥ 86.00", meta: "正常 · 刚刚", pct: 55, note: "国内直连", rows: [["币种", "CNY"], ["同步", "刚刚"]] },
+      { id: "g", name: "GitHub Models", letter: "G", provider: "兼容 API", status: "ok", statusLabel: "正常", amount: "$ 12.00", meta: "正常 · 8 分钟前", pct: 25, note: "试用额度", rows: [["币种", "USD"], ["同步", "8 分钟前"]] },
+      { id: "s", name: "自建网关", letter: "S", provider: "Cookie", status: "ok", statusLabel: "正常", amount: "¥ 1,280", meta: "正常 · 2 分钟前", pct: 80, note: "内部节点", rows: [["币种", "CNY"], ["同步", "2 分钟前"]] },
+    ];
+
+    const grid = document.getElementById("grid");
+    const scrim = document.getElementById("scrim");
+    const pop = document.getElementById("popover");
+    let openId = null;
+    let sourceEl = null;
+    let animating = false;
+    let lastDx = 0;
+    let lastDy = 0;
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    /** Final anchor near card center, clamped so the whole popover stays in view. */
+    function computeAnchor(cardRect, popW, popH) {
+      const margin = 16;
+      const cardCx = cardRect.left + cardRect.width / 2;
+      const cardCy = cardRect.top + cardRect.height / 2;
+      // Prefer slightly above card; if no room, settle near center of card
+      let anchorX = cardCx;
+      let anchorY = cardCy - Math.min(40, popH * 0.08);
+
+      const halfW = popW / 2;
+      const halfH = popH / 2;
+      anchorX = clamp(anchorX, margin + halfW, window.innerWidth - margin - halfW);
+      anchorY = clamp(anchorY, margin + halfH, window.innerHeight - margin - halfH);
+      return {
+        x: anchorX,
+        y: anchorY,
+        dx: cardCx - anchorX,
+        dy: cardCy - anchorY,
+      };
+    }
+
+    function renderCards() {
+      grid.innerHTML = accounts
+        .map(
+          (a) => `
+        <button type="button" class="card${a.status === "warn" ? " is-warn" : a.status === "err" ? " is-err" : ""}" data-id="${a.id}">
+          <div class="card-top">
+            <div class="who">
+              <span class="av">${a.letter}</span>
+              <span><strong>${a.name}</strong><small>${a.provider}</small></span>
+            </div>
+            <span class="tag ${a.status === "warn" ? "warn" : a.status === "err" ? "err" : ""}">${a.statusLabel}</span>
+          </div>
+          <div class="amt">${a.amount}</div>
+          <div class="bar"><i style="width:${a.pct}%"></i></div>
+          <div class="meta"><span>${a.meta.split("·")[0]}</span><span>${a.meta.split("·")[1] || ""}</span></div>
+        </button>`,
+        )
+        .join("");
+
+      grid.querySelectorAll(".card").forEach((el) => {
+        el.addEventListener("click", () => openPopover(el.dataset.id, el));
+      });
+    }
+
+    function fillPopover(a) {
+      document.getElementById("pName").textContent = a.name;
+      document.getElementById("pSub").textContent = `${a.provider} · ${a.note}`;
+      document.getElementById("pAmt").textContent = a.amount;
+      const tag = document.getElementById("pTag");
+      tag.textContent = a.statusLabel;
+      tag.className = "tag" + (a.status === "warn" ? " warn" : a.status === "err" ? " err" : "");
+      document.getElementById("pRows").innerHTML = a.rows
+        .map(([k, v]) => `<div class="row-item"><span>${k}</span><b>${v}</b></div>`)
+        .join("");
+    }
+
+    function openPopover(id, el) {
+      const a = accounts.find((x) => x.id === id);
+      if (!a || animating) return;
+
+      // Switch source if already open
+      if (openId && openId !== id) {
+        closePopover(true);
+      }
+
+      openId = id;
+      if (sourceEl) sourceEl.classList.remove("is-source");
+      sourceEl = el;
+      sourceEl.classList.add("is-source");
+      fillPopover(a);
+
+      const cardRect = el.getBoundingClientRect();
+
+      // Prepare popover for measure (invisible, no transition)
+      pop.classList.remove("open", "closing");
+      pop.style.transition = "none";
+      pop.style.visibility = "hidden";
+      pop.style.opacity = "0";
+      pop.style.left = "50%";
+      pop.style.top = "50%";
+      pop.style.setProperty("--pop-dx", "0px");
+      pop.style.setProperty("--pop-dy", "0px");
+      pop.style.setProperty("--pop-scale", "1");
+      // force layout with final-ish size
+      void pop.offsetWidth;
+
+      const popW = pop.offsetWidth || Math.min(380, window.innerWidth - 32);
+      const popH = Math.min(pop.scrollHeight || 360, window.innerHeight * 0.72, 520);
+      const anchor = computeAnchor(cardRect, popW, popH);
+      lastDx = anchor.dx;
+      lastDy = anchor.dy;
+
+      pop.style.left = `${anchor.x}px`;
+      pop.style.top = `${anchor.y}px`;
+      // Start pose: sit on card center
+      pop.style.setProperty("--pop-dx", `${anchor.dx}px`);
+      pop.style.setProperty("--pop-dy", `${anchor.dy}px`);
+      pop.style.setProperty("--pop-scale", "0.86");
+      pop.style.opacity = "0";
+      pop.style.visibility = "visible";
+      void pop.offsetWidth;
+
+      // Animate to rest
+      requestAnimationFrame(() => {
+        pop.style.transition = "";
+        scrim.classList.add("open");
+        pop.classList.add("open");
+        pop.style.opacity = "";
+        pop.style.setProperty("--pop-dx", "0px");
+        pop.style.setProperty("--pop-dy", "0px");
+        pop.style.setProperty("--pop-scale", "1");
+        pop.setAttribute("aria-hidden", "false");
+      });
+    }
+
+    function closePopover(immediate) {
+      if (!openId && !sourceEl) {
+        scrim.classList.remove("open");
+        pop.classList.remove("open", "closing");
+        return;
+      }
+
+      const finish = () => {
+        pop.classList.remove("open", "closing");
+        pop.style.visibility = "hidden";
+        pop.style.opacity = "";
+        pop.style.transition = "";
+        pop.style.setProperty("--pop-dx", "0px");
+        pop.style.setProperty("--pop-dy", "0px");
+        pop.style.setProperty("--pop-scale", "1");
+        pop.setAttribute("aria-hidden", "true");
+        if (sourceEl) {
+          sourceEl.classList.remove("is-source");
+          sourceEl = null;
+        }
+        openId = null;
+        animating = false;
+      };
+
+      if (immediate) {
+        scrim.classList.remove("open");
+        finish();
+        return;
+      }
+
+      animating = true;
+      pop.classList.add("closing");
+      pop.classList.remove("open");
+      // reverse toward card
+      pop.style.setProperty("--pop-dx", `${lastDx}px`);
+      pop.style.setProperty("--pop-dy", `${lastDy}px`);
+      pop.style.setProperty("--pop-scale", "0.88");
+      pop.style.opacity = "0";
+      scrim.classList.remove("open");
+
+      const onEnd = (e) => {
+        if (e.propertyName !== "transform" && e.propertyName !== "opacity") return;
+        pop.removeEventListener("transitionend", onEnd);
+        finish();
+      };
+      pop.addEventListener("transitionend", onEnd);
+      // fallback
+      window.setTimeout(() => {
+        if (animating) {
+          pop.removeEventListener("transitionend", onEnd);
+          finish();
+        }
+      }, 560);
+    }
+
+    scrim.addEventListener("click", () => closePopover(false));
+    document.getElementById("pClose").addEventListener("click", () => closePopover(false));
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePopover(false);
+    });
+    window.addEventListener("resize", () => {
+      if (openId) closePopover(true);
+    });
+
+    // mode
+    document.getElementById("modeSeg").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-mode]");
+      if (!btn) return;
+      document.documentElement.dataset.mode = btn.dataset.mode;
+      document.querySelectorAll("#modeSeg button").forEach((b) => b.classList.toggle("is-on", b === btn));
+    });
+
+    // theme
+    document.getElementById("themePills").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-theme]");
+      if (!btn) return;
+      document.documentElement.dataset.theme = btn.dataset.theme;
+      document.querySelectorAll(".theme-pill").forEach((b) => b.classList.toggle("is-on", b === btn));
+    });
+
+    // cursor glow
+    const glow = document.getElementById("glow");
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    function onMove(e) {
+      if (!fine.matches) return;
+      glow.style.opacity = "1";
+      glow.style.left = e.clientX + "px";
+      glow.style.top = e.clientY + "px";
+    }
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerleave", () => {
+      glow.style.opacity = "0";
+    });
+
+    renderCards();
+  </script>
+</body>
+</html>

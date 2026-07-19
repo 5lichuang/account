@@ -1,0 +1,72 @@
+/**
+ * stormzhang Brand Tokens
+ * Source: https://stormzhang.ai/
+ * Reuse in any product / deck / OSS page.
+ */
+
+:root {
+  /* ——— Core palette ——— */
+  --sz-bg: #050510;
+  --sz-bg-elevated: #0a0a18;
+  --sz-bg-card: rgba(56, 249, 215, 0.03);
+  --sz-bg-popup: rgba(7, 11, 9, 0.94);
+
+  --sz-accent: #38f9d7;
+  --sz-accent-rgb: 56, 249, 215;
+  --sz-blue: #60a5fa;
+  --sz-blue-rgb: 96, 165, 250;
+  --sz-green: #43e97b;
+  --sz-green-rgb: 67, 233, 123;
+
+  --sz-text: #e6edf3;
+  --sz-text-secondary: #8b949e;
+  --sz-text-muted: rgba(240, 245, 255, 0.5);
+  --sz-white-rgb: 240, 245, 255;
+
+  /* ——— Gradients ——— */
+  --sz-gradient-logo: linear-gradient(90deg, #38f9d7, #60a5fa, #38f9d7);
+  --sz-gradient-horizon: linear-gradient(
+    90deg,
+    transparent,
+    rgba(56, 249, 215, 0.12) 20%,
+    rgba(96, 165, 250, 0.2) 50%,
+    rgba(56, 249, 215, 0.12) 80%,
+    transparent
+  );
+  --sz-gradient-nebula:
+    radial-gradient(ellipse at 20% 50%, rgba(25, 10, 60, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(10, 40, 60, 0.3) 0%, transparent 45%),
+    radial-gradient(ellipse at 60% 80%, rgba(15, 25, 50, 0.3) 0%, transparent 50%);
+
+  /* ——— Typography ——— */
+  --sz-font-display: "Space Grotesk", "SF Pro Display", "Helvetica Neue", sans-serif;
+  --sz-font-cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    sans-serif;
+  --sz-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+    "Segoe UI", sans-serif;
+
+  /* ——— Surfaces ——— */
+  --sz-radius-sm: 8px;
+  --sz-radius-md: 12px;
+  --sz-radius-lg: 16px;
+  --sz-radius-pill: 100px;
+
+  --sz-border-subtle: 1px solid rgba(56, 249, 215, 0.12);
+  --sz-border-soft: 1px solid rgba(56, 249, 215, 0.2);
+  --sz-border-strong: 1px solid rgba(56, 249, 215, 0.35);
+
+  --sz-glow-sm: 0 0 6px rgba(56, 249, 215, 0.2);
+  --sz-glow-md: 0 0 20px rgba(56, 249, 215, 0.15);
+  --sz-glow-lg: 0 0 40px rgba(56, 249, 215, 0.2);
+
+  /* ——— Motion ——— */
+  --sz-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --sz-ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --sz-ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ——— Brand copy ——— */
+  --sz-name: "stormzhang";
+  --sz-tagline-en: "Reborn in AI";
+  --sz-tagline-zh: "在 AI 中重生";
+  --sz-role: "前程序员&产品人，AI Builder";
+}

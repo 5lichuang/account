@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Musu · 运营总览布局参考</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07100e;
+      --bg-elev: #0c1614;
+      --panel: #0f1a18;
+      --panel-2: #121f1c;
+      --line: rgba(56, 249, 215, 0.12);
+      --line-strong: rgba(56, 249, 215, 0.22);
+      --text: #e8f2ef;
+      --muted: #8aa39b;
+      --subtle: #6d837c;
+      --mint: #38f9d7;
+      --mint-dim: rgba(56, 249, 215, 0.1);
+      --mint-ink: #04201a;
+      --warn: #e8b84a;
+      --warn-bg: rgba(232, 184, 74, 0.1);
+      --danger: #f07167;
+      --danger-bg: rgba(240, 113, 103, 0.1);
+      --ok: #5eead4;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 90% 60% at 8% -10%, rgba(56, 249, 215, 0.07), transparent 50%),
+        radial-gradient(ellipse 70% 50% at 100% 0%, rgba(20, 80, 70, 0.18), transparent 45%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .banner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 10px 20px 0;
+      font-size: 12px;
+      color: var(--subtle);
+    }
+    .banner strong { color: var(--mint); font-weight: 650; }
+
+    /* —— Top nav —— */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 66px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 16, 14, 0.88);
+      backdrop-filter: blur(14px);
+    }
+    .nav-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-self: start;
+    }
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(145deg, #38f9d7, #1aa88f 55%, #0d6b5c);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.12) inset, 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .logo span {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+    .brand strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand small {
+      display: block;
+      margin-top: 1px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      justify-self: center;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 3px rgba(56, 249, 215, 0.14);
+    }
+    .nav-status .sep {
+      width: 1px;
+      height: 12px;
+      background: var(--line-strong);
+      margin: 0 2px;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-self: end;
+      flex-wrap: wrap;
+    }
+    .seg {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      gap: 2px;
+    }
+    .seg button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 650;
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .seg button.on {
+      background: var(--mint);
+      color: var(--mint-ink);
+    }
+    select.theme {
+      height: 32px;
+      padding: 0 28px 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .12s, opacity .15s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible { outline: 2px solid rgba(56,249,215,.45); outline-offset: 2px; }
+    .btn-primary {
+      background: var(--mint);
+      color: var(--mint-ink);
+      box-shadow: 0 0 16px rgba(56, 249, 215, 0.16);
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-ghost {
+      border-color: var(--line-strong);
+      background: transparent;
+      color: var(--text);
+    }
+    .btn-ghost:hover {
+      border-color: var(--mint);
+      color: var(--mint);
+      background: var(--mint-dim);
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* —— Page —— */
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 20px 20px 48px;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .page-head h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .page-head p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* —— Metrics —— */
+    .metrics {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .metric {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 76px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      cursor: pointer;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+      transition: border-color .15s, background .15s, box-shadow .15s;
+    }
+    .metric:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-2);
+    }
+    .metric:focus-visible {
+      outline: 2px solid rgba(56,249,215,.4);
+      outline-offset: 2px;
+    }
+    .metric.on {
+      border-color: rgba(56, 249, 215, 0.4);
+      background: linear-gradient(180deg, rgba(56,249,215,0.08), var(--panel));
+      box-shadow: inset 0 0 0 1px rgba(56,249,215,0.08);
+    }
+    .metric .label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .metric .value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric.total .value { font-size: 28px; color: var(--mint); }
+    .metric.warn .value { color: var(--warn); }
+    .metric.danger .value { color: var(--danger); }
+    .metric .hint {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--subtle);
+    }
+
+    /* —— Section —— */
+    .section-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .section-bar h2 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .section-bar span {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+
+    /* —— Account cards: 4 per row —— */
+    .accounts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--panel);
+      transition: border-color .15s, transform .15s, background .15s;
+    }
+    .card:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-1px);
+      background: var(--panel-2);
+    }
+    .card.is-warn {
+      border-color: rgba(232, 184, 74, 0.35);
+      background: linear-gradient(180deg, var(--warn-bg), var(--panel));
+    }
+    .card.is-err {
+      border-color: rgba(240, 113, 103, 0.4);
+      background: linear-gradient(180deg, var(--danger-bg), var(--panel));
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .av {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mint);
+      background: var(--mint-dim);
+      border: 1px solid var(--line);
+    }
+    .who strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .who small {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--subtle);
+    }
+    .status {
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 650;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--subtle);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid transparent;
+    }
+    .status.ok { color: var(--muted); }
+    .status.warn {
+      color: var(--warn);
+      background: var(--warn-bg);
+      border-color: rgba(232, 184, 74, 0.25);
+    }
+    .status.err {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border-color: rgba(240, 113, 103, 0.28);
+    }
+
+    .balance {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .delta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--subtle);
+    }
+    .delta.down { color: var(--danger); }
+    .delta.up { color: var(--ok); }
+    .delta.flat { color: var(--subtle); }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      color: var(--subtle);
+    }
+    .card-foot .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    .more {
+      position: relative;
+    }
+    .more > button {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .more > button:hover {
+      border-color: var(--line-strong);
+      color: var(--text);
+    }
+    .menu {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 6px);
+      min-width: 140px;
+      padding: 6px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: #0d1816;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 5;
+    }
+    .more.open .menu { display: grid; gap: 2px; }
+    .menu button {
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .menu button:hover { background: rgba(56,249,215,0.08); color: var(--mint); }
+    .menu button.danger { color: var(--danger); }
+    .menu button.danger:hover { background: var(--danger-bg); }
+
+    .notes {
+      margin-top: 28px;
+      padding: 16px 18px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .notes h3 {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .notes ul { padding-left: 18px; }
+    .notes li { margin: 4px 0; }
+    .notes b { color: var(--mint); }
+
+    @media (max-width: 1279px) {
+      .accounts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric.total { grid-column: 1 / -1; }
+    }
+    @media (max-width: 767px) {
+      .nav-inner { grid-template-columns: 1fr auto; }
+      .nav-status { display: none; }
+      .accounts { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .page-head { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <strong>布局参考 Demo</strong>
+    · 运营总览风格 · 静态示意 · 未接生产 API
+  </div>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="logo"><span>M</span></div>
+        <div>
+          <strong>Musu</strong>
+          <small>余额监控</small>
+        </div>
+      </div>
+      <div class="nav-status">
+        <span class="dot"></span>
+        <span>3/4 个账户正常</span>
+        <span class="sep"></span>
+        <span>更新于 14:32</span>
+      </div>
+      <div class="nav-actions">
+        <div class="seg" aria-label="明暗">
+          <button type="button" class="on">暗色</button>
+          <button type="button">白天</button>
+        </div>
+        <select class="theme" aria-label="主题">
+          <option>Glass 薄荷青</option>
+          <option>Mint</option>
+          <option>Ocean</option>
+        </select>
+        <button class="btn btn-primary" type="button">＋ 添加上游</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <h1>资金概览</h1>
+        <p>先看风险，再查看每个上游的余额与变化。</p>
+      </div>
+      <button class="btn btn-ghost" type="button" id="refreshAll">↻ 刷新全部</button>
+    </div>
+
+    <section class="metrics" aria-label="资金概览指标">
+      <button class="metric total on" type="button" data-filter="all">
+        <span class="label">CNY 账户总余额</span>
+        <span class="value">¥103,354.46</span>
+        <span class="hint">跨币种仅汇总已展示账户</span>
+      </button>
+      <button class="metric" type="button" data-filter="ok">
+        <span class="label">正常账户</span>
+        <span class="value">3</span>
+        <span class="hint">点击筛选</span>
+      </button>
+      <button class="metric warn" type="button" data-filter="warn">
+        <span class="label">余额预警</span>
+        <span class="value">1</span>
+        <span class="hint">低于预警线</span>
+      </button>
+      <button class="metric danger" type="button" data-filter="err">
+        <span class="label">同步异常</span>
+        <span class="value">0</span>
+        <span class="hint">需人工处理</span>
+      </button>
+    </section>
+
+    <div class="section-bar">
+      <h2>上游账户</h2>
+      <span id="sectionHint">按风险优先排序 · 共 4 个</span>
+    </div>
+
+    <section class="accounts" id="accounts" aria-label="上游账户"></section>
+
+    <div class="notes">
+      <h3>本参考与生产页的关系</h3>
+      <ul>
+        <li><b>保留</b>：Musu 品牌、暗色薄荷青、添加/刷新/筛选/账户卡片信息主轴。</li>
+        <li><b>调整</b>：信息架构改为「资金概览 → 上游账户」；指标区变矮；桌面 4 卡一行铺满。</li>
+        <li><b>弱化</b>：正常状态、装饰光晕、大留白与展示型标题。</li>
+        <li><b>未做</b>：伪造趋势图；未改 API / 模型；「近 24h 变化」仅为布局占位，无数据时可隐藏该行。</li>
+        <li>点指标可筛选卡片；点「更多操作」看菜单结构。</li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    const accounts = [
+      {
+        id: "a1",
+        name: "阿里-188",
+        provider: "阿里云 BSS",
+        letter: "阿",
+        status: "ok",
+        statusLabel: "正常",
+        balance: "¥57.10",
+        delta: "近 24 小时 −¥12.80",
+        deltaClass: "down",
+        foot: "预警线 ¥50",
+        sync: "1 分钟前更新",
+      },
+      {
+        id: "a2",
+        name: "云天畅想",
+        provider: "兼容 API",
+        letter: "云",
+        status: "ok",
+        statusLabel: "正常",
+        balance: "¥428.36",
+        delta: "近 24 小时 +¥6.20",
+        deltaClass: "up",
+        foot: "预计可用 12 天",
+        sync: "刚刚更新",
+      },
+      {
+        id: "a3",
+        name: "NewAPI 节点",
+        provider: "兼容 API",
+        letter: "N",
+        status: "warn",
+        statusLabel: "余额预警",
+        balance: "$ 8.20",
+        delta: "近 24 小时 −$3.40",
+        deltaClass: "down",
+        foot: "预警线 $10",
+        sync: "3 分钟前更新",
+      },
+      {
+        id: "a4",
+        name: "TokenPony",
+        provider: "Cookie 会话",
+        letter: "T",
+        status: "ok",
+        statusLabel: "正常",
+        balance: "$ 156.40",
+        delta: "近 24 小时 持平",
+        deltaClass: "flat",
+        foot: "充值+馈赠合计",
+        sync: "2 分钟前更新",
+      },
+    ];
+
+    let filter = "all";
+    const root = document.getElementById("accounts");
+    const hint = document.getElementById("sectionHint");
+
+    function render() {
+      const list = accounts.filter((a) => {
+        if (filter === "all") return true;
+        if (filter === "ok") return a.status === "ok";
+        if (filter === "warn") return a.status === "warn";
+        if (filter === "err") return a.status === "err";
+        return true;
+      });
+      hint.textContent = `按风险优先排序 · 共 ${list.length} 个`;
+      root.innerHTML = list
+        .map(
+          (a) => `
+        <article class="card${a.status === "warn" ? " is-warn" : a.status === "err" ? " is-err" : ""}" data-id="${a.id}">
+          <div class="card-top">
+            <div class="who">
+              <span class="av">${a.letter}</span>
+              <span>
+                <strong>${a.name}</strong>
+                <small>${a.provider}</small>
+              </span>
+            </div>
+            <span class="status ${a.status}">${a.statusLabel}</span>
+          </div>
+          <div>
+            <div class="balance">${a.balance}</div>
+            <div class="delta ${a.deltaClass}">${a.delta}</div>
+          </div>
+          <div class="card-foot">
+            <div class="meta">
+              <span>${a.foot}</span>
+              <span>${a.sync}</span>
+            </div>
+            <div class="more">
+              <button type="button" data-more>更多操作</button>
+              <div class="menu" role="menu">
+                <button type="button">立即同步</button>
+                <button type="button">编辑配置</button>
+                <button type="button">查看详情</button>
+                <button type="button">停用</button>
+                <button type="button" class="danger">删除</button>
+              </div>
+            </div>
+          </div>
+        </article>`,
+        )
+        .join("");
+
+      root.querySelectorAll("[data-more]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const wrap = btn.closest(".more");
+          document.querySelectorAll(".more.open").forEach((m) => {
+            if (m !== wrap) m.classList.remove("open");
+          });
+          wrap.classList.toggle("open");
+        });
+      });
+    }
+
+    document.querySelectorAll(".metric").forEach((el) => {
+      el.addEventListener("click", () => {
+        document.querySelectorAll(".metric").forEach((m) => m.classList.remove("on"));
+        el.classList.add("on");
+        filter = el.dataset.filter;
+        render();
+      });
+    });
+
+    document.getElementById("refreshAll").addEventListener("click", function () {
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = "刷新中…";
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = "↻ 刷新全部";
+      }, 1200);
+    });
+
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".more.open").forEach((m) => m.classList.remove("open"));
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[Unit]
+Description=Zhangdan upstream balance dashboard
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=zhangdan
+Group=zhangdan
+WorkingDirectory=/opt/zhangdan/current
+Environment=NODE_ENV=production
+Environment=WRANGLER_LOG_PATH=/var/lib/zhangdan/wrangler.log
+ExecStart=/usr/bin/node ./node_modules/vinext/dist/cli.js start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=20s
+KillSignal=SIGTERM
+UMask=0077
+StateDirectory=zhangdan
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
