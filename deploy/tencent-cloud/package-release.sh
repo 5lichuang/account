@@ -47,7 +47,7 @@ for item in "${release_items[@]}"; do
 done
 
 find "${RELEASE_DIR}" -name .DS_Store -delete
-COPYFILE_DISABLE=1 tar -C "${STAGING_DIR}" -czf "${OUTPUT_PATH}" zhangdan
+COPYFILE_DISABLE=1 tar --no-xattrs -C "${STAGING_DIR}" -czf "${OUTPUT_PATH}" zhangdan
 
 if command -v shasum >/dev/null 2>&1; then
   CHECKSUM="$(shasum -a 256 "${OUTPUT_PATH}" | cut -d ' ' -f 1)"
